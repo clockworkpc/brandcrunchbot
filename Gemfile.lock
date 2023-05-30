@@ -353,6 +353,7 @@ DEPENDENCIES
   pry-theme
   puma (~> 5.0)
   rails (~> 7.0.5)
+  rainbow
   redis (~> 4.0)
   rspec
   rspec-rails
