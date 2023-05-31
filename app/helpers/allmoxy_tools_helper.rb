@@ -1,0 +1,2 @@
+module AllmoxyToolsHelper
+end

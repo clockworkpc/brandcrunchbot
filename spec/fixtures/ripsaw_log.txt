@@ -1,0 +1,26 @@
+                                                                               ---------------- In ----------------  ------- Out ------
+Date      Time      Setup  Decscription             Material        Thickness  Pieces   Lin.Mt.     Cu.Mt Avg.Width  # Widths Avg.Yield
+02/09/22  06:21 am  2      73357 - Cameron          Paint Grade Maple   25.40      14      44.2      0.21    181.15         4     65.15
+02/09/22  06:29 am  2      73408 - Cameron           Paint Grade Mapl   25.40      17      57.3      0.25    175.54         1     59.09
+02/09/22  06:35 am  2      73551 - Cameron           Paint Grade Mapl   25.40      10      22.3      0.09    156.59         2     65.21
+02/09/22  07:54 am  2      73368 - Cameron          Rift Sawn White O   25.40      24      54.6      0.17    121.97         5     62.18
+02/09/22  07:56 am  2      73338 - Cameron           Rift Sawn White    25.40       3       7.0      0.02    122.94         1     56.49
+02/09/22  08:59 am  2      73050 - Cameron          Knotty Alder  Kno   25.40     104     303.6      0.91    117.70         2     59.00
+02/09/22  09:33 am  2      73722 - Cameron           Select Beech  Se   25.40       5      14.3      0.05    137.44         1     51.22
+02/09/22  09:37 am  2      73967 - Cameron           Knotty Alder  Kn   25.40       2       5.5      0.01    107.92         2     64.40
+02/09/22  09:38 am  2      73962 - Cameron           Select Red Oak     25.40       1       3.0      0.01    160.05         1     87.47
+02/09/22  09:48 am  2      73778 - Cameron           Select Alder  Se   25.40      28      50.6      0.14    106.60         4     76.30
+02/09/22  09:56 am  2      73483 - Cameron           Paint Grade Mapl   25.40       6      19.8      0.08    165.25         1     63.47
+02/09/22  10:19 am  2      73582 - Cameron           Select Alder  Se   25.40      23      39.9      0.12    121.08         1     67.69
+02/09/22  10:26 am  2      73584 - Cameron           Select Alder  Se   25.40      12      21.0      0.07    127.41         1     64.29
+02/09/22  11:08 am  2      73434 - Cameron          Select Cherry  Se   25.40      14      41.5      0.17    163.37         2     68.72
+02/09/22  11:20 am  2      73543 - Cameron           Select Cherry  S   25.40       8      23.8      0.12    198.65         4     76.05
+02/09/22  11:27 am  2      73288 - Cameron           Select White Oak   25.40       5      11.6      0.04    156.24         1     62.56
+02/09/22  11:46 am  2      73362 - Cameron           Rustic Hickory     25.40      25      58.2      0.21    141.81         1     66.66
+02/09/22  11:57 am  2      73422 - Cameron           5/4 Paint Grade    25.40       3       9.1      0.04    155.02         2     84.72
+02/09/22  01:22 pm  2      73391 - Cameron           Paint Grade Mapl   25.40       4      13.4      0.05    156.57         2     70.58
+02/09/22  01:52 pm  2      73567 - Cameron           Paint Grade Mapl   25.40      32     107.9      0.46    166.04         1     69.95
+02/09/22  01:55 pm  2      73560 - Cameron           Paint Grade Mapl   25.40       4      13.1      0.05    165.10         3     64.01
+
+                                                                      Totals:     344     921.7      3.29
+

@@ -35,7 +35,7 @@ class GoogleSheetsApi
     token_store = Google::Auth::Stores::RedisTokenStore.new(redis: Redis.new)
     # token_store = Google::Auth::Stores::FileTokenStore.new file: TOKEN_PATH_SHEETS
     authorizer = Google::Auth::UserAuthorizer.new client_id, SCOPE, token_store
-    user_id = 'google_sheets'
+    user_id = 'google_sheets_brandcrunch'
     get_credentials(authorizer:, user_id:)
   end
 

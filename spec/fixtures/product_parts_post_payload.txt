@@ -1,0 +1,348 @@
+x: y
+parts[110791][display_name]: Finished Size
+parts[110791][name]: finished_size
+parts[110791][cutlist_formula]:
+parts[110791][exporter]:
+parts[110791][precision]:
+parts[110791][plists][]: 1
+parts[110791][attributes][0][name]: Height
+parts[110791][attributes][0][cutlist_width]:
+parts[110791][attributes][0][formula]: height * 25.4
+parts[110791][attributes][1][name]: Width
+parts[110791][attributes][1][cutlist_width]:
+parts[110791][attributes][1][formula]: width * 25.4
+parts[110792][display_name]: Panel
+parts[110792][name]: panel
+parts[110792][cutlist_formula]: {{this_part.Qty}}, {{this_part.Width}}, {{this_part.Length}}, , {{order_num}}, {{1_4_wood_veneer.name}}, {{order_name}},
+parts[110792][exporter]: 29
+parts[110792][precision]: 1
+parts[110792][plists][]: 1
+parts[110792][attributes][0][name]: Qty
+parts[110792][attributes][0][cutlist_width]: 4
+parts[110792][attributes][0][formula]: (_panels_tall.Panels_tall*_panels_wide.Panels_Wide)
+parts[110792][attributes][0][qtyfield]: 1
+parts[110792][attributes][1][name]: Width
+parts[110792][attributes][1][cutlist_width]: 9
+parts[110792][attributes][1][formula]: (((width-left_stile_width-right_stile_width- (_panels_wide.Panels_Wide>1?((_panels_wide.Panels_Wide-1)*(side_by_side_width)):0))/_panels_wide.Panels_Wide)+panel_profiles.Panel_cut_add) * 25.4
+parts[110792][attributes][2][name]: Length
+parts[110792][attributes][2][cutlist_width]: 9
+parts[110792][attributes][2][formula]: (((height-top_rail_width-bottom_rail_width- (_panels_tall.Panels_tall>1?((_panels_tall.Panels_tall-1)*(double_width)):0))/_panels_tall.Panels_tall)+panel_profiles.Panel_cut_add) * 25.4
+parts[110792][attributes][3][name]: Chop_Length
+parts[110792][attributes][3][cutlist_width]: 9
+parts[110792][attributes][3][formula]: (((height-top_rail_width-bottom_rail_width- (_panels_tall.Panels_tall>1?((_panels_tall.Panels_tall-1)*(double_width)):0))/_panels_tall.Panels_tall)+panel_profiles.Panel_cut_add)+panel_profiles.Panel_cut_add
+parts[110792][attributes][3][hide]: 1
+parts[110792][supplies][0][link]: 123
+parts[110792][supplies][0][location]:
+parts[110792][supplies][0][formula]:((((this_part.Width/25.4)*(this_part.Length/25.4))/144)*(1+1_4_wood_veneer.waste_yield))/32
+parts[110793][display_name]: Panel summing
+parts[110793][name]: panel_summing
+parts[110793][cutlist_formula]:
+parts[110793][exporter]:
+parts[110793][precision]: 1
+parts[110793][attributes][0][name]: total
+parts[110793][attributes][0][cutlist_width]:
+parts[110793][attributes][0][formula]: ((((width-left_stile_width-right_stile_width- (_panels_wide.Panels_Wide>1?((_panels_wide.Panels_Wide-1)*(side_by_side_width)):0))/_panels_wide.Panels_Wide)+panel_profiles.Panel_cut_add)/wood_type_thick_doors.avg_board_width) * (((height-top_rail_width-bottom_rail_width- (_panels_tall.Panels_tall>1?((_panels_tall.Panels_tall-1)*(double_width)):0))/_panels_tall.Panels_tall)+panel_profiles.Panel_cut_add)
+parts[110793][attributes][0][hide]: 1
+parts[110794][display_name]: Rails
+parts[110794][name]: rails
+parts[110794][cutlist_formula]:
+parts[110794][exporter]:
+parts[110794][precision]: 1
+parts[110794][plists][]: 1
+parts[110794][attributes][0][name]: Qty
+parts[110794][attributes][0][cutlist_width]:
+parts[110794][attributes][0][formula]: 2
+parts[110794][attributes][0][qtyfield]: 1
+parts[110794][attributes][1][name]: Length
+parts[110794][attributes][1][cutlist_width]:
+parts[110794][attributes][1][formula]: (width - ((right_stile_width + left_stile_width) - (stile_rail.Cut_Variable * 2)) + stile_rail.add_length_for_machining) * 25.4
+parts[110795][display_name]: Top
+parts[110795][name]: top
+parts[110795][cutlist_formula]: Rails, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.width}}, {{this_part.Length}}, Job {{order_num}}, {{customer_name}}, {{this_part.width}}, {{this_part.Cameron_Length}}
+parts[110795][exporter]: 27
+parts[110795][precision]: 1
+parts[110795][attributes][0][name]: Qty
+parts[110795][attributes][0][cutlist_width]: 4
+parts[110795][attributes][0][formula]: _panels_wide.Panels_Wide>1? door_style.Top_rail_material_width>0? _panels_wide.Panels_Wide :1 :1
+parts[110795][attributes][0][qtyfield]: 1
+parts[110795][attributes][1][name]: width
+parts[110795][attributes][1][cutlist_width]:
+parts[110795][attributes][1][formula]: door_style.Top_rail_material_width>0? top_rail_width+door_style.Top_rail_material_width: (top_rail_width*25.4)+stile_rail.ripwidth_add
+parts[110795][attributes][1][hide]: 1
+parts[110795][attributes][2][name]: Length
+parts[110795][attributes][2][cutlist_width]: 9
+parts[110795][attributes][2][formula]: (_panels_wide.Panels_Wide>1? door_style.Top_rail_material_width>0? (((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide) (stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining :width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining : width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining) * 25.4 parts[110795][attributes][3][name]: Cameron_Length
+parts[110795][attributes][3][cutlist_width]:
+parts[110795][attributes][3][formula]: (_panels_wide.Panels_Wide>1? door_style.Top_rail_material_width>0? (((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide) (stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining :(width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield) : ((width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield)))*25.4
+parts[110795][attributes][3][hide]: 1
+parts[110795][supplies][0][link]: 109
+parts[110795][supplies][0][location]:
+parts[110795][supplies][0][formula]: (((this_part.width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110796][display_name]: Bottom
+parts[110796][name]: bottom
+parts[110796][cutlist_formula]: Rails, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.width}}, {{this_part.Length}}, Job {{order_num}}, {{customer_name}}, {{this_part.width}}, {{this_part.Cameron_Length}}
+parts[110796][exporter]: 27
+parts[110796][precision]: 1
+parts[110796][attributes][0][name]: Length
+parts[110796][attributes][0][cutlist_width]: 9
+parts[110796][attributes][0][formula]: (width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining) * 25.4
+parts[110796][attributes][1][name]: width
+parts[110796][attributes][1][cutlist_width]:
+parts[110796][attributes][1][formula]: door_style.Bottom_rail_material_width>0? bottom_rail_width door_style.Bottom_rail_material_width: (bottom_rail_width*25.4) stile_rail.ripwidth_add
+parts[110796][attributes][1][hide]: 1
+parts[110796][attributes][2][name]: Cameron_Length
+parts[110796][attributes][2][cutlist_width]:
+parts[110796][attributes][2][formula]: ((width-((left_stile_width right_stile_width)-(stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield))*25.4
+parts[110796][attributes][2][hide]: 1
+parts[110796][attributes][3][name]: Qty
+parts[110796][attributes][3][cutlist_width]: 4
+parts[110796][attributes][3][formula]: _panels_wide.Panels_Wide>1? door_style.Bottom_rail_material_width>0? _panels_wide.Panels_Wide :1 :1
+parts[110796][attributes][3][qtyfield]: 1
+parts[110796][supplies][0][link]: 109
+parts[110796][supplies][0][location]:
+parts[110796][supplies][0][formula]: (((this_part.width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110797][display_name]: Stiles
+parts[110797][name]: stiles
+parts[110797][cutlist_formula]:
+parts[110797][exporter]:
+parts[110797][precision]: 1
+parts[110797][plists][]: 1
+parts[110797][attributes][0][name]: Qty
+parts[110797][attributes][0][cutlist_width]: 4
+parts[110797][attributes][0][formula]: 2
+parts[110797][attributes][0][qtyfield]: 1
+parts[110797][attributes][1][name]: Length
+parts[110797][attributes][1][cutlist_width]: 9
+parts[110797][attributes][1][formula]: (height stile_rail.stile_add) * 25.4
+parts[110798][display_name]: Left
+parts[110798][name]: left
+parts[110798][cutlist_formula]: Stiles, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.width}}, {{this_part.Length}}, Job {{order_num}}, {{customer_name}}, {{this_part.width}}, {{this_part.Cameron_Length}}
+parts[110798][exporter]: 27
+parts[110798][precision]: 1
+parts[110798][attributes][0][name]: Length
+parts[110798][attributes][0][cutlist_width]:
+parts[110798][attributes][0][formula]: (height stile_rail.stile_add) * 25.4
+parts[110798][attributes][1][name]: width
+parts[110798][attributes][1][cutlist_width]:
+parts[110798][attributes][1][formula]: (left_stile_width*25.4) stile_rail.ripwidth_add
+parts[110798][attributes][1][hide]: 1
+parts[110798][attributes][2][name]: Cameron_Length
+parts[110798][attributes][2][cutlist_width]:
+parts[110798][attributes][2][formula]: ((height stile_rail.stile_add)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield))*25.4
+parts[110798][attributes][2][hide]: 1
+parts[110798][attributes][3][name]: Qty
+parts[110798][attributes][3][cutlist_width]:
+parts[110798][attributes][3][formula]: 1
+parts[110798][attributes][3][qtyfield]: 1
+parts[110798][attributes][3][hide]: 1
+parts[110798][supplies][0][link]: 109
+parts[110798][supplies][0][location]:
+parts[110798][supplies][0][formula]: (((this_part.width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110799][display_name]: Right
+parts[110799][name]: right
+parts[110799][cutlist_formula]: Stiles, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.width}}, {{this_part.Length}}, Job {{order_num}}, {{customer_name}}, {{this_part.width}}, {{this_part.Cameron_Length}}
+parts[110799][exporter]: 27
+parts[110799][precision]: 1
+parts[110799][attributes][0][name]: Length
+parts[110799][attributes][0][cutlist_width]:
+parts[110799][attributes][0][formula]: (height stile_rail.stile_add) * 25.4
+parts[110799][attributes][1][name]: width
+parts[110799][attributes][1][cutlist_width]:
+parts[110799][attributes][1][formula]: (right_stile_width*25.4) stile_rail.ripwidth_add
+parts[110799][attributes][1][hide]: 1
+parts[110799][attributes][2][name]: Cameron_Length
+parts[110799][attributes][2][cutlist_width]:
+parts[110799][attributes][2][formula]: ((height stile_rail.stile_add)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield))*25.4
+parts[110799][attributes][2][hide]: 1
+parts[110799][attributes][3][name]: Qty
+parts[110799][attributes][3][cutlist_width]:
+parts[110799][attributes][3][formula]: 1
+parts[110799][attributes][3][qtyfield]: 1
+parts[110799][attributes][3][hide]: 1
+parts[110799][supplies][0][link]: 109
+parts[110799][supplies][0][location]:
+parts[110799][supplies][0][formula]: (((this_part.width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110800][display_name]: Horiz. mid rail
+parts[110800][name]: horizontal_middle_rail
+parts[110800][cutlist_formula]: Rails, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.Width}}, {{this_part.Length}}, Job {{order_num}},{{customer_name}}, {{this_part.Width}}, {{this_part.Cameron_Length}}
+parts[110800][exporter]: 27
+parts[110800][precision]: 1
+parts[110800][plists][]: 1
+parts[110800][attributes][0][name]: Qty
+parts[110800][attributes][0][cutlist_width]:
+parts[110800][attributes][0][formula]: _panels_wide.Panels_Wide == 1 ? _panels_tall.Panels_tall - 1 : _panels_wide.Panels_Wide * (_panels_tall.Panels_tall - 1)
+parts[110800][attributes][0][qtyfield]: 1
+parts[110800][attributes][1][name]: Length
+parts[110800][attributes][1][cutlist_width]:
+parts[110800][attributes][1][formula]: (_panels_tall.Panels_tall>1? (((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide) (stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining :0) * 25.4
+parts[110800][attributes][2][name]: Width
+parts[110800][attributes][2][cutlist_width]:
+parts[110800][attributes][2][formula]: (double_width*25.4) stile_rail.ripwidth_add
+parts[110800][attributes][2][hide]: 1
+parts[110800][attributes][3][name]: Cameron_Length
+parts[110800][attributes][3][cutlist_width]:
+parts[110800][attributes][3][formula]: _panels_tall.Panels_tall>1? (((((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide) (stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield))*25.4 :0
+parts[110800][attributes][3][hide]: 1
+parts[110800][supplies][0][link]: 109
+parts[110800][supplies][0][location]:
+parts[110800][supplies][0][formula]: (((this_part.Width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110801][display_name]: Vert. mid rail
+parts[110801][name]: verticle_middle_rail
+parts[110801][cutlist_formula]: Rails, {{wood_type_thick_doors.name}}, {{this_part.Qty}}, {{wood_type_thick_doors.Thickness}}, {{this_part.Width}}, {{this_part.Length}}, Job {{order_num}},{{customer_name}}, {{this_part.Width}}, {{this_part.Cameron_Length}}
+parts[110801][exporter]: 27
+parts[110801][precision]: 1
+parts[110801][plists][]: 1
+parts[110801][attributes][0][name]: Qty
+parts[110801][attributes][0][cutlist_width]:
+parts[110801][attributes][0][formula]: _panels_wide.Panels_Wide-1
+parts[110801][attributes][0][qtyfield]: 1
+parts[110801][attributes][1][name]: Length
+parts[110801][attributes][1][cutlist_width]:
+parts[110801][attributes][1][formula]: ((_panels_wide.Panels_Wide)>1? door_style.Top_rail_material_width>0?(height-bottom_rail_width) (stile_rail.Cut_Variable) (stile_rail.add_length_for_machining + stile_rail.arch_sbs_add_length): (height-top_rail_width-bottom_rail_width) (stile_rail.Cut_Variable*2) (stile_rail.add_length_for_machining) :0) * 25.4
+parts[110801][attributes][2][name]: Width
+parts[110801][attributes][2][cutlist_width]:
+parts[110801][attributes][2][formula]: (side_by_side_width*25.4) stile_rail.ripwidth_add
+parts[110801][attributes][2][hide]: 1
+parts[110801][attributes][3][name]: Cameron_Length
+parts[110801][attributes][3][cutlist_width]:
+parts[110801][attributes][3][formula]: (_panels_wide.Panels_Wide)>1? (door_style.Top_rail_material_width>0?(height-bottom_rail_width) (stile_rail.Cut_Variable) (stile_rail.add_length_for_machining + stile_rail.arch_sbs_add_length): ((height-top_rail_width-bottom_rail_width) (stile_rail.Cut_Variable*2) (stile_rail.add_length_for_machining))*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield))*25.4 :0
+parts[110801][attributes][3][hide]: 1
+parts[110801][supplies][0][link]: 109
+parts[110801][supplies][0][location]:
+parts[110801][supplies][0][formula]: (((this_part.Width/25.4)*(this_part.Length/25.4))/144)*(1 wood_type_thick_doors.Cameron_Stile_and_Rail_Yield wood_type_thick_doors.sum_waste_yield)
+parts[110802][display_name]: Pro Scale Export
+parts[110802][name]: pro_scale_export
+parts[110802][cutlist_formula]: {{order_num}}, {{group_id}},{{line_num}}, {{width}}, {{height}},{{quantity}}
+parts[110802][exporter]: 24
+parts[110802][precision]: 1
+parts[110802][plists][]: 1
+parts[110803][display_name]: Finish
+parts[110803][name]: finish
+parts[110803][cutlist_formula]: {{order_num}}, {{door_finish.name}}, {{quantity}}, {{this_part.Price}},{{line_price}}
+parts[110803][exporter]: 34
+parts[110803][precision]: .01
+parts[110803][plists][]: 22
+parts[110803][attributes][0][name]: Price
+parts[110803][attributes][0][cutlist_width]:
+parts[110803][attributes][0][formula]: ((height * width) / 144) < 2 ? (2 * (door_finish.Sqft_finish_price finish_color.sqft_upcharge finish_sheen.sqft_upcharge)) door_finish.caulk_upcharge : ((height * width) / 144) * (door_finish.Sqft_finish_price finish_color.sqft_upcharge finish_sheen.sqft_upcharge) door_finish.caulk_upcharge
+parts[110804][display_name]: Panel Area
+parts[110804][name]: panel_area
+parts[110804][cutlist_formula]:
+parts[110804][exporter]:
+parts[110804][precision]:
+parts[110804][attributes][0][name]: Total_Area
+parts[110804][attributes][0][cutlist_width]:
+parts[110804][attributes][0][formula]: (width - ((right_stile_width + left_stile_width) (_panels_wide.Panels_Wide > 1 ? ((_panels_wide.Panels_Wide - 1) * side_by_side_width) : 0)) (+panel_profiles.Panel_cut_add * _panels_wide.Panels_Wide)) * (height - ((bottom_rail_width top_rail_width) (_panels_tall.Panels_tall > 1 ? ((_panels_tall.Panels_tall - 1) * double_width) : 0)) (+panel_profiles.Panel_cut_add * _panels_tall.Panels_tall))
+parts[110805][display_name]: Applied Molding
+parts[110805][name]: applied_molding
+parts[110805][cutlist_formula]:
+parts[110805][exporter]:
+parts[110805][precision]: .0625
+parts[110805][attributes][0][name]: Length
+parts[110805][attributes][0][cutlist_width]:
+parts[110805][attributes][0][formula]: ((height * _panels_wide.Panels_Wide) * 2) ((width * _panels_tall.Panels_tall) * 2)
+parts[110805][supplies][0][link]:
+parts[110805][supplies][0][location]: 33
+parts[110805][supplies][0][item_id]: 6552
+parts[110805][supplies][0][formula]: (((height * _panels_wide.Panels_Wide) * 2) ((width * _panels_tall.Panels_tall) * 2)) / 12
+parts[110806][display_name]: Salvador Top Rail
+parts[110806][name]: salvador_top_rail
+parts[110806][cutlist_formula]: ,1, 1, 0, 0,{{this_part.Length}},{{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},R,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110806][exporter]: 38
+parts[110806][precision]: .01
+parts[110806][attributes][0][name]: Qty
+parts[110806][attributes][0][cutlist_width]: 4
+parts[110806][attributes][0][formula]: 1
+parts[110806][attributes][0][qtyfield]: 1
+parts[110806][attributes][1][name]: Width
+parts[110806][attributes][1][cutlist_width]:
+parts[110806][attributes][1][formula]: door_style.Top_rail_material_width > 0 ? top_rail_width+door_style.Top_rail_material_width : top_rail_width
+parts[110806][attributes][1][hide]: 1
+parts[110806][attributes][2][name]: Length
+parts[110806][attributes][2][cutlist_width]: 9
+parts[110806][attributes][2][formula]: round(((width - left_stile_width - right_stile_width (stile_rail.Cut_Variable * 2) + stile_rail.add_length_for_machining) * 25.4) * 10) / 10
+parts[110807][display_name]: Salvador Bottom Rail
+parts[110807][name]: salvador_bottom_rail
+parts[110807][cutlist_formula]: ,1,1,0,0,{{this_part.Length}},{{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},R,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110807][exporter]: 38
+parts[110807][precision]: .01
+parts[110807][attributes][0][name]: Length
+parts[110807][attributes][0][cutlist_width]: 9
+parts[110807][attributes][0][formula]: round(((width - left_stile_width - right_stile_width (stile_rail.Cut_Variable * 2) + stile_rail.add_length_for_machining) * 25.4) * 10) / 10
+parts[110807][attributes][1][name]: Width
+parts[110807][attributes][1][cutlist_width]:
+parts[110807][attributes][1][formula]: bottom_rail_width
+parts[110807][attributes][1][hide]: 1
+parts[110807][attributes][2][name]: Qty
+parts[110807][attributes][2][cutlist_width]: 4
+parts[110807][attributes][2][formula]: 1
+parts[110807][attributes][2][qtyfield]: 1
+parts[110808][display_name]: Salvador Left Stile
+parts[110808][name]: salvador_left_stile
+parts[110808][cutlist_formula]: ,1,1,0,0,{{this_part.Length}},{{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},S,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110808][exporter]: 38
+parts[110808][precision]: .01
+parts[110808][attributes][0][name]: Length
+parts[110808][attributes][0][cutlist_width]:
+parts[110808][attributes][0][formula]: round(((height stile_rail.stile_add) * 25.4) * 10) / 10
+parts[110808][attributes][1][name]: Width
+parts[110808][attributes][1][cutlist_width]:
+parts[110808][attributes][1][formula]: left_stile_width
+parts[110808][attributes][1][hide]: 1
+parts[110808][attributes][2][name]: Qty
+parts[110808][attributes][2][cutlist_width]:
+parts[110808][attributes][2][formula]: 1
+parts[110808][attributes][2][qtyfield]: 1
+parts[110808][attributes][2][hide]: 1
+parts[110809][display_name]: Salvador Right Stile
+parts[110809][name]: salvador_right_stile
+parts[110809][cutlist_formula]: ,1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},S,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110809][exporter]: 38
+parts[110809][precision]: .01
+parts[110809][attributes][0][name]: Length
+parts[110809][attributes][0][cutlist_width]:
+parts[110809][attributes][0][formula]: round(((height stile_rail.stile_add) * 25.4) * 10) / 10
+parts[110809][attributes][1][name]: Width
+parts[110809][attributes][1][cutlist_width]:
+parts[110809][attributes][1][formula]: right_stile_width
+parts[110809][attributes][1][hide]: 1
+parts[110809][attributes][2][name]: Qty
+parts[110809][attributes][2][cutlist_width]:
+parts[110809][attributes][2][formula]: 1
+parts[110809][attributes][2][qtyfield]: 1
+parts[110809][attributes][2][hide]: 1
+parts[110810][display_name]: Salvador Horizontal Mid Rail
+parts[110810][name]: salvador_horizontal_mid_rail
+parts[110810][cutlist_formula]: ,1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MR_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},MR,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110810][exporter]: 38
+parts[110810][precision]: .01
+parts[110810][plists][]: 1
+parts[110810][attributes][0][name]: Qty
+parts[110810][attributes][0][cutlist_width]:
+parts[110810][attributes][0][formula]: _panels_wide.Panels_Wide == 1 ? _panels_tall.Panels_tall - 1 : _panels_wide.Panels_Wide * (_panels_tall.Panels_tall - 1)
+parts[110810][attributes][0][qtyfield]: 1
+parts[110810][attributes][1][name]: Length
+parts[110810][attributes][1][cutlist_width]:
+parts[110810][attributes][1][formula]: round(((_panels_tall.Panels_tall>1? (((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide) (stile_rail.Cut_Variable*2)) + stile_rail.add_length_for_machining :0) * 25.4) * 10) / 10
+parts[110810][attributes][2][name]: Width
+parts[110810][attributes][2][cutlist_width]:
+parts[110810][attributes][2][formula]: double_width
+parts[110810][attributes][2][hide]: 1
+parts[110811][display_name]: Salvador Vertical Mid Rail
+parts[110811][name]: salvador_vertical_mid_rail
+parts[110811][cutlist_formula]: ,1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MS_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}},{{this_part.Width}},{{group_id}}{{line_num}},MS,{{stile_rail.name}},{{wood_type_thick_doors.name}},{{product_name}},{{door_finish.name}}
+parts[110811][exporter]: 38
+parts[110811][precision]: .01
+parts[110811][plists][]: 1
+parts[110811][attributes][0][name]: Qty
+parts[110811][attributes][0][cutlist_width]:
+parts[110811][attributes][0][formula]: _panels_wide.Panels_Wide-1
+parts[110811][attributes][0][qtyfield]: 1
+parts[110811][attributes][1][name]: Length
+parts[110811][attributes][1][cutlist_width]:
+parts[110811][attributes][1][formula]: round((((_panels_wide.Panels_Wide)>1? door_style.Top_rail_material_width>0?(height-bottom_rail_width) (stile_rail.Cut_Variable) (stile_rail.add_length_for_machining + stile_rail.arch_sbs_add_length): (height-top_rail_width-bottom_rail_width) (stile_rail.Cut_Variable*2) (stile_rail.add_length_for_machining) :0) * 25.4) * 10) / 10
+parts[110811][attributes][2][name]: Width
+parts[110811][attributes][2][cutlist_width]:
+parts[110811][attributes][2][formula]: side_by_side_width
+parts[110811][attributes][2][hide]: 1
+data_end: 1

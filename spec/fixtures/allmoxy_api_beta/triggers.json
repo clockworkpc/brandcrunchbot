@@ -1,0 +1,37 @@
+{
+  "total_entries": 1,
+  "per_page": 15,
+  "page": 1,
+  "total_pages": 1,
+  "entries": [
+    {
+      "trigger_id": 28,
+      "company_id": 1,
+      "name": "New Employee - Email - Employee",
+      "event": "contact_created",
+      "condition": null,
+      "additional_conds": null,
+      "actions": {
+        "action": "add_task",
+        "task": "We've hired a new employee, {contact_name}.  \r\n(Create the task next, something like...Please create a packet for {contact_name} and complete the new employee checklist for that client.)",
+        "assign_to": [
+          "1"
+        ],
+        "hour": "1",
+        "minute": "00",
+        "ampm": "am"
+      },
+      "uses_company_tags": 0,
+      "uses_recipient_tags": 0,
+      "flags": 7,
+      "status": 0,
+      "timestamp": "2021-10-08T10:57:11",
+      "createdby": null,
+      "createdbyid": null,
+      "createddate": null,
+      "updatedby": null,
+      "updatedbyid": null,
+      "updateddate": null
+    }
+  ]
+}

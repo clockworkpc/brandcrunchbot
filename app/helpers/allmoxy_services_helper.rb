@@ -1,0 +1,2 @@
+module AllmoxyServicesHelper
+end

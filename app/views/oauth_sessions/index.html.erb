@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Oauth sessions</h1>
+
+<div id="oauth_sessions">
+  <% @oauth_sessions.each do |oauth_session| %>
+    <%= render oauth_session %>
+    <p>
+      <%= link_to "Show this oauth session", oauth_session %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New oauth session", new_oauth_session_path %>

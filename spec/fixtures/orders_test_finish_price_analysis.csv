@@ -1,0 +1,82 @@
+order_number,customer_name,completed_at,product_name,line_subtotal,finish_price,qty
+31530,Paucek Group,2022-01-02,Murphys,112,98,6
+31530,Paucek Group,2022-01-02,Murphys,694,90,4
+31530,Paucek Group,2022-01-02,Murphys,874,14,9
+31530,Paucek Group,2022-01-02,Dos Equis,620,99,7
+31530,Paucek Group,2022-01-02,Dos Equis,808,89,1
+31530,Paucek Group,2022-01-02,Dos Equis,434,12,8
+31530,Paucek Group,2022-01-02,Harp,923,29,9
+31530,Paucek Group,2022-01-02,Harp,232,64,4
+31530,Paucek Group,2022-01-02,Harp,714,71,1
+67267,"Crooks, Smith and Von",2022-01-08,Harp,159,18,1
+67267,"Crooks, Smith and Von",2022-01-08,Murphys,923,88,9
+67267,"Crooks, Smith and Von",2022-01-08,Murphys,974,23,2
+67267,"Crooks, Smith and Von",2022-01-08,Murphys,784,12,3
+67267,"Crooks, Smith and Von",2022-01-08,Dos Equis,345,16,8
+67267,"Crooks, Smith and Von",2022-01-08,Dos Equis,441,87,5
+67267,"Crooks, Smith and Von",2022-01-08,Dos Equis,617,87,1
+67267,"Crooks, Smith and Von",2022-01-08,Harp,857,90,10
+67267,"Crooks, Smith and Von",2022-01-08,Harp,503,68,9
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Murphys,325,84,2
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Murphys,668,50,9
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Murphys,377,96,5
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Dos Equis,875,73,7
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Dos Equis,945,47,2
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Dos Equis,393,88,8
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Harp,920,79,5
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Harp,122,79,8
+87341,"Kemmer, Mosciski and Heaney",2022-01-12,Harp,779,19,5
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Samuel Adams,506,46,10
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Samuel Adams,307,77,3
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Samuel Adams,918,56,5
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Patagonia,732,35,1
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Patagonia,244,54,6
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Patagonia,179,82,9
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Harp,453,64,3
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Harp,157,95,8
+15003,"Jakubowski, Tremblay and Boyle",2022-01-20,Harp,454,38,4
+42804,Feeney LLC,2022-01-01,Harp,372,11,3
+42804,Feeney LLC,2022-01-01,Harp,374,24,5
+42804,Feeney LLC,2022-01-01,Harp,434,27,5
+42804,Feeney LLC,2022-01-01,Patagonia,565,39,2
+42804,Feeney LLC,2022-01-01,Patagonia,935,28,2
+42804,Feeney LLC,2022-01-01,Patagonia,268,17,9
+42804,Feeney LLC,2022-01-01,Samuel Adams,501,79,10
+42804,Feeney LLC,2022-01-01,Samuel Adams,829,82,1
+42804,Feeney LLC,2022-01-01,Samuel Adams,378,89,10
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Samuel Adams,737,13,1
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Samuel Adams,655,58,5
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Samuel Adams,165,47,4
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Patagonia,315,88,10
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Patagonia,768,59,8
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Patagonia,891,87,9
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Harp,987,49,3
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Harp,873,79,4
+69101,"Waters, O'Keefe and Volkman",2022-01-15,Harp,626,32,7
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,627,83,5
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,160,22,3
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,407,63,7
+17366,"Weimann, Dicki and Tillman",2022-01-21,Quimes,509,75,8
+17366,"Weimann, Dicki and Tillman",2022-01-21,Quimes,916,48,7
+17366,"Weimann, Dicki and Tillman",2022-01-21,Quimes,683,13,1
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,865,16,10
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,691,65,7
+17366,"Weimann, Dicki and Tillman",2022-01-21,Paulaner,372,32,2
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,207,33,10
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,481,81,3
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,921,27,7
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Quimes,845,47,7
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Quimes,288,58,3
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Quimes,964,72,10
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,703,47,3
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,395,66,5
+18398,"Hartmann, Grimes and Kuvalis",2022-01-03,Paulaner,369,63,9
+39039,Huel Group,2022-01-09,Paulaner,552,55,7
+39039,Huel Group,2022-01-09,Paulaner,464,41,10
+39039,Huel Group,2022-01-09,Paulaner,128,71,3
+39039,Huel Group,2022-01-09,Quimes,931,97,5
+39039,Huel Group,2022-01-09,Quimes,667,18,7
+39039,Huel Group,2022-01-09,Quimes,825,42,3
+39039,Huel Group,2022-01-09,Paulaner,447,54,1
+39039,Huel Group,2022-01-09,Paulaner,883,39,3
+39039,Huel Group,2022-01-09,Paulaner,743,37,9

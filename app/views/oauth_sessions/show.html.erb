@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @oauth_session %>
+
+<div>
+  <%= link_to "Edit this oauth session", edit_oauth_session_path(@oauth_session) %> |
+  <%= link_to "Back to oauth sessions", oauth_sessions_path %>
+
+  <%= button_to "Destroy this oauth session", @oauth_session, method: :delete %>
+</div>

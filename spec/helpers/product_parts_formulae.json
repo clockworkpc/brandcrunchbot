@@ -1,0 +1,152 @@
+{
+  "door": {
+    "top_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}3,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "door_style.Top_rail_material_width > 0 ?\ntop_rail_width + door_style.Top_rail_material_width :\ntop_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Top_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "bottom_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}4,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "bottom_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Bottom_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "left_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}1,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "left_stile_width",
+        "qty": "1"
+      }
+    },
+    "right_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}2,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "right_stile_width",
+        "qty": "1"
+      }
+    },
+    "horizontal_mid_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MR_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}6,{{this_part.Width}},{{group_id}}{{line_num}},MR",
+        "length": "round(((_panels_tall.Panels_tall>1?\n(((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide)+(stile_rail.Cut_Variable*2))+stile_rail.add_length_for_machining\n:0) * 25.4 ) * 10) / 10\n",
+        "width": "double_width",
+        "qty": "_panels_wide.Panels_Wide == 1 ? _panels_tall.Panels_tall - 1 : _panels_wide.Panels_Wide * (_panels_tall.Panels_tall - 1)"
+      }
+    },
+    "vertical_mid_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MS_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}5,{{this_part.Width}},{{group_id}}{{line_num}},MS",
+        "length": "round((((_panels_wide.Panels_Wide)>1?\ndoor_style.Top_rail_material_width>0?(height-bottom_rail_width)+(stile_rail.Cut_Variable)+(stile_rail.add_length_for_machining+stile_rail.arch_sbs_add_length):\n(height-top_rail_width-bottom_rail_width)+(stile_rail.Cut_Variable*2)+(stile_rail.add_length_for_machining)\n:0) * 25.4 ) * 10 ) / 10",
+        "width": "side_by_side_width",
+        "qty": "_panels_wide.Panels_Wide-1"
+      }
+    }
+  },
+  "drawer_front": {
+    "top_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}3,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "top_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Top_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "bottom_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}4,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "bottom_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Bottom_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "left_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}1,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "left_stile_width",
+        "qty": "1"
+      }
+    },
+    "right_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}2,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "right_stile_width",
+        "qty": "1"
+      }
+    },
+    "horizontal_mid_rail": {
+      "salvador": {
+        "part_export": "",
+        "length": "",
+        "width": "",
+        "qty": ""
+      }
+    },
+    "vertical_mid_rail": {
+      "salvador": {
+        "part_export": "",
+        "length": "",
+        "width": "",
+        "qty": ""
+      }
+    }
+  },
+  "end_panel": {
+    "top_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}3,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "top_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Top_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "bottom_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,1,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_R_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}4,{{this_part.Width}},{{group_id}}{{line_num}},R",
+        "length": "round((( width - left_stile_width - right_stile_width + ( stile_rail.Cut_Variable * 2 )+ stile_rail.add_length_for_machining ) * 25.4 ) * 10 ) / 10",
+        "width": "bottom_rail_width",
+        "qty": "_panels_wide.Panels_Wide>1?\ndoor_style.Top_rail_material_width>0?\n_panels_wide.Panels_Wide\n:1\n:1"
+      }
+    },
+    "left_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}1,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "left_stile_width",
+        "qty": "1"
+      }
+    },
+    "right_stile": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,2,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_S_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}2,{{this_part.Width}},{{group_id}}{{line_num}},S",
+        "length": "round(((height+stile_rail.stile_add) * 25.4) * 10) / 10",
+        "width": "right_stile_width",
+        "qty": "1"
+      }
+    },
+    "horizontal_mid_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MR_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}6,{{this_part.Width}},{{group_id}}{{line_num}},MR",
+        "length": "round(((_panels_tall.Panels_tall>1?\n(((width-left_stile_width-right_stile_width-(side_by_side_width*(_panels_wide.Panels_Wide-1)))/_panels_wide.Panels_Wide)+(stile_rail.Cut_Variable*2))+stile_rail.add_length_for_machining\n:0) * 25.4 ) * 10) / 10",
+        "width": "double_width",
+        "qty": "_panels_wide.Panels_Wide == 1 ? _panels_tall.Panels_tall - 1 : _panels_wide.Panels_Wide * (_panels_tall.Panels_tall - 1)"
+      }
+    },
+    "vertical_mid_rail": {
+      "salvador": {
+        "part_export": ",1, 1, 0, 0,{{this_part.Length}}, {{this_part.Qty}},,3,,,{{this_part.Length}}_{{this_part.Width}}_{{stile_rail.name}}_MS_{{order_num}}_{{group_id}}{{line_num}}//{{order_num}}{{group_id}}{{line_num}}5,{{this_part.Width}},{{group_id}}{{line_num}},MS",
+        "length": "round((((_panels_wide.Panels_Wide)>1?\ndoor_style.Top_rail_material_width>0?(height-bottom_rail_width)+(stile_rail.Cut_Variable)+(stile_rail.add_length_for_machining+stile_rail.arch_sbs_add_length):\n(height-top_rail_width-bottom_rail_width)+(stile_rail.Cut_Variable*2)+(stile_rail.add_length_for_machining)\n:0) * 25.4 ) * 10 ) / 10",
+        "width": "side_by_side_width",
+        "qty": "_panels_wide.Panels_Wide-1"
+      }
+    }
+  }
+}
