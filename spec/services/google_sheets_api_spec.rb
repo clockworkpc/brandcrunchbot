@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GoogleSheetsApi do
-  let(:spreadsheet_id) { '1n_GqOd2YkXv-gvTut0og_eeqeqj5wmuSgB9JSheX5GU' }
-  let(:range_sr) { 'shipping_report!A1:Z' }
+  let(:spreadsheet_id) { '1VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8' }
+  let(:range) { 'domains!A1:C' }
   let(:shipping_report_csv_path) { 'spec/fixtures/shipping_report.csv' }
 
   describe 'Inputs' do
@@ -15,7 +15,9 @@ RSpec.describe GoogleSheetsApi do
 
     it 'writes values into shipping_report_test', focus: true do
       gsa = described_class.new
-      res = gsa.update_values(spreadsheet_id:, range: range_sr, csv_path: shipping_report_csv_path)
+      res = gsa.get_spreadsheet_values(spreadsheet_id:, range:)
+      pp res
+      # res = gsa.update_values(spreadsheet_id:, range: range_sr, csv_path: shipping_report_csv_path)
     end
   end
 end

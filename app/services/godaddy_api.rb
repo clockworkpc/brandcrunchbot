@@ -94,10 +94,47 @@ class GodaddyApi
     end
   end
 
-  # TODO: Need to test in OTE if possible
-  def instant_purchase_closeout_domain(domain_name:)
+  def place_bid_or_purchase(domain_name:, s_bid_amount:)
     key = Rails.application.credentials[:ote_key]
     secret = Rails.application.credentials[:ote_secret]
+
+    soap_action_name = 'PlaceBidOrPurchase'
+    basename = 'place_bid_or_purchase'
+    kwargs = {
+      domain_name:,
+      s_bid_amount:,
+      use_my_purchase_profile: true,
+      accept_utos: true,
+      accept_ama: true,
+      accept_dnra: true,
+      bid_comment: domain_name
+    }
+
+    https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
+    response = https.request(request)
+    require 'pry'; binding.pry
+    parse_auction_list(response)
+  end
+
+  # TODO: Need to test in OTE if possible
+  def instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+    key = Rails.application.credentials[:ote_key]
+    secret = Rails.application.credentials[:ote_secret]
+
+    soap_action_name = 'InstantPurchaseCloseoutDomain'
+    basename = 'instant_purchase_closeout_domain'
+    kwargs = {
+      domain_name:,
+      closeout_domain_price_key:,
+      accept_utos: true,
+      accept_ama: true,
+      accept_dnra: true
+    }
+
+    https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
+    response = https.request(request)
+    require 'pry'; binding.pry
+    parse_auction_list(response)
 
     # TODO: Ascertain whether OTE credentials can be used
     # TODO: Call on domain that has already been purchased
