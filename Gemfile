@@ -8,6 +8,8 @@ gem 'bootsnap', require: false
 gem 'clipboard'
 gem 'colorize'
 gem 'csvreader'
+gem 'delayed_job_active_record'
+gem 'delayed_job_web'
 gem 'devise'
 gem 'google-apis-drive_v3'
 gem 'google-apis-sheets_v4'
