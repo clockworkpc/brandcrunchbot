@@ -4,7 +4,7 @@
 
 BrandCrunch, owned and operated by Markus Nystrom is the Client.
 
-Garber Squared, owned and operated by Alexander Garber, is the Service Provider, herein referred to as G2.
+Garber Squared, owned and operated by Alexander Garber, is the Service Provider, herein referred to as G².
 
 All instructions for the application, logs of the application's actions, credentials, and any other sensitive or application-specific data, are to be the exclusive property of the Client.
 
@@ -16,7 +16,9 @@ The BrandCrunchBot solution is composed of the following:
 
 1. Google Sheet containing the following tabs:
     1. `domains` tab for listing desired domain names, proxy bids, and BIN prices.
+    1. `domains_test` tab for dummy records thereof.
     2. `logs` tab for recording actions by the BrandCrunchBot server and Worker dyno.
+    2. `logs_test` for recording actions vis-a-vis the dummy records in `domains_test`.
 2. BrandCrunchBot Rails application hosted on Heroku, comprising the following:
     1. Rails server
     2. Static user interface
@@ -25,6 +27,8 @@ The BrandCrunchBot solution is composed of the following:
 3. GoDaddy Auction API, utilising the following SOAP endpoints:
     1. `AuctionDetails`
     2. `PlaceBidOrPurchase`
+
+<div style="page-break-after: always;"></div>
 
 ### Rails Application
 
@@ -41,28 +45,37 @@ The BrandCrunchBot is to be a Ruby on Rails application of the following nature:
   - Web Dyno for the server
   - Worker Dyno for the scheduled Jobs
 
+<div style="page-break-after: always;"></div>
+
 ### Google Sheet
 
-BrandCrunch is to create a Google Sheet and give Editing access to the nominated G2 account.
+BrandCrunch is to create a Google Sheet and give Editing access to the nominated G² account.
+The Google Sheet in question until further notice is [BrandCrunch API]( https://docs.google.com/spreadsheets/d/1VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8 ),
+sheet ID `1VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8`.
 
 ### Google Sheets API
 
 1. In order to give the BrandCrunchBot application access to the aforementioned Google Sheet, BrandCrunch is to create an OAuth token and provide the credentials JSON.
-2. G2 is to store the requisite OAuth token credentials in an encrypted YAML file on the Rails server, which will be added to version control on Git.
-3. G2 is to store the key to the encrypted credentials in such a manner so as not to be accessible from within the hosted server.
+2. G² is to store the requisite OAuth token credentials in an encrypted YAML file on the Rails server, which will be added to version control on Git.
+3. G² is to store the key to the encrypted credentials in such a manner so as not to be accessible from within the hosted server.
+
+NOTE: At the time of writing, the OAuth credentials are provided by the Google account of G².
 
 ### GoDaddy Auction API
 
-1. BrandCrunch is to provide G2 the following API credentials for access to the GoDaddy Auction API:
+1. BrandCrunch is to provide G² the following API credentials for access to the GoDaddy Auction API:
   a. `OTE` for testing
   b. `Prod` for production
 
-2. G2 is to store the requisite OAuth token credentials in an encrypted YAML file on the Rails server, which will be added to version control on Git.
-3. G2 is to store the key to the encrypted credentials in such a manner so as not to be accessible from within the hosted server.
+2. G² is to store the requisite OAuth token credentials in an encrypted YAML file on the Rails server, which will be added to version control on Git.
+3. G² is to store the key to the encrypted credentials in such a manner so as not to be accessible from within the hosted server.
 
 It is noted that in the case of the `InstantPurchaseCloseoutDomain` endpoint, a successful SOAP request even with the OTE credentials results in adding a domain to the Client's cart.
 
+<div style="page-break-after: always;"></div>
+
 ## Synchronous Actions
+
 
 ### Singular Actions
 
@@ -75,6 +88,8 @@ It is noted that in the case of the `InstantPurchaseCloseoutDomain` endpoint, a 
 | Server           | Notification        | GSheets::`logs`   | Google Sheets API | "Requesting domains and instructions..." |
 | Google Sheet     | GET Response        | Server            | Google Sheets API | returns listed domains as an array       |
 | Server           | Notification        | GSheets::`logs`   | Google Sheets API | "Received domains and instructions."     |
+
+<div style="page-break-after: always;"></div>
 
 ### Bloc Actions
 
@@ -91,7 +106,9 @@ For each spreadsheet row represented by a nested array in the Google Sheets resp
 | AuctionDetails   | SOAP Response | Server                  | GoDaddy API       | return Auction details in response body                       |
 | Server           | Parse body    | N/A                     | Ruby `regex`      | For each SOAP response, parse body to extract Auction details |
 
-#### GoDaddy Response
+<div style="page-break-after: always;"></div>
+
+#### GoDaddy API Response
 
 For each parsed SOAP response, the following actions apply:
 
@@ -113,11 +130,13 @@ In all cases, the Worker dyno will append the particulars of the Job to the `log
 
 ### Live Auction
 
-| Proxy Bid in instructions? | Live Bid placed? | Comparison            | Action          |
-|----------------------------|------------------|-----------------------|-----------------|
-| TRUE                       | TRUE             | Proxy Bid < Live Bid  | Place proxy bid |
-| TRUE                       | TRUE             | Live Bid >= Proxy Bid | Refrain         |
-| TRUE                       | FALSE            | N/A                   | Refrain         |
+| Proxy Bid in instructions? | Live Bid placed? | Comparison            | Action                                |
+|----------------------------|------------------|-----------------------|---------------------------------------|
+| TRUE                       | TRUE             | Proxy Bid <= Live Bid | Refrain                               |
+| TRUE                       | TRUE             | Proxy Bid > Live Bid  | Execute Proxy Bid When 3 minutes left |
+| TRUE                       | FALSE            | N/A                   | Refrain                               |
+
+NOTE: Future Feature Request: place proxy bid for a specified domain even if no Live Bid placed.
 
 ### Buy It Now
 
@@ -127,3 +146,5 @@ In all cases, the Worker dyno will append the particulars of the Job to the `log
 | TRUE                      | TRUE                      | Target BIN price <= Available BIN price | Add to cart |
 | FALSE                     | TRUE                      | N/A                                     | Refrain     |
 | TRUE                      | FALSE                     | N/A                                     | N/A         |
+
+NOTE: Ascertain whether the Bot can effect the purchase and not just add to cart.
