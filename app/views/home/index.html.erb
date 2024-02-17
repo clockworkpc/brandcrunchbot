@@ -11,5 +11,7 @@
 
 
 <% if current_user %>
-  <p>You are logged in.</p>
+  <p>You are logged in, <%= current_user.email %></p>
+
+
 <% end %>
