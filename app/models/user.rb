@@ -6,7 +6,7 @@ class User < ApplicationRecord
   after_create :authorize_user, :send_welcome_email
 
   def authorize_user
-    authorised_users = JSON.parse(File.read('config/allmoxy/authorized_users.json'))
+    authorised_users = JSON.parse(File.read('config/authorized_users.json'))
     is_whitelisted = authorised_users.include?(email)
 
     return if is_whitelisted == authorized?
