@@ -40,6 +40,7 @@ class GoogleSheetsApi
   end
 
   def get_spreadsheet_values(spreadsheet_id:, range:)
+    require 'pry'; binding.pry
     response = @service.get_spreadsheet_values(spreadsheet_id, range)
     Rails.logger.info 'No data found.' if response.values.nil?
     response

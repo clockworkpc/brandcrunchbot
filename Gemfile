@@ -1,13 +1,13 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.3'
+ruby '3.1.2'
 
 gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', require: false
-gem 'clipboard'
 gem 'colorize'
 gem 'csvreader'
+gem 'daemons'
 gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'devise'
@@ -17,21 +17,29 @@ gem 'hiredis'
 gem 'httparty'
 gem 'importmap-rails'
 gem 'jbuilder'
+gem 'json_deep_parse'
 gem 'nokogiri'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.0'
-gem 'rails', '~> 7.0.5'
+gem 'rails', '~> 7.0.4'
 gem 'rainbow'
 gem 'redis'
+gem 'selenium-webdriver'
+gem 'slack-ruby-client'
 gem 'sprockets-rails'
 gem 'stimulus-rails'
+gem 'thor'
 gem 'turbo-rails'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+gem 'watir-rails'
+gem 'webdrivers'
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'clipboard'
   gem 'database_cleaner'
   gem 'database_cleaner-active_record'
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'guard'
@@ -56,6 +64,4 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'selenium-webdriver'
-  gem 'webdrivers'
 end
