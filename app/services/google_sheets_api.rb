@@ -35,18 +35,17 @@ class GoogleSheetsApi
     token_store = Google::Auth::Stores::RedisTokenStore.new(redis: Redis.new)
     # token_store = Google::Auth::Stores::FileTokenStore.new file: TOKEN_PATH_SHEETS
     authorizer = Google::Auth::UserAuthorizer.new client_id, SCOPE, token_store
-    user_id = 'google_sheets_brandcrunch'
+    user_id = 'brandcrunch'
     get_credentials(authorizer:, user_id:)
   end
 
   def get_spreadsheet_values(spreadsheet_id:, range:)
-    require 'pry'; binding.pry
     response = @service.get_spreadsheet_values(spreadsheet_id, range)
     Rails.logger.info 'No data found.' if response.values.nil?
     response
   end
 
-  def append_spreadsheet_value(spreadsheet_id:, range:, values:, value_input_option: 'USER_ENTERED')
+  def append_spreadsheet_values(spreadsheet_id:, range:, values:, value_input_option: 'USER_ENTERED')
     values_range = Google::Apis::SheetsV4::ValueRange.new(values:)
     @service.append_spreadsheet_value(spreadsheet_id, range, values_range, value_input_option:)
   end
@@ -79,13 +78,21 @@ class GoogleSheetsApi
     @service.update_spreadsheet_value(spreadsheet_id, range, request_body, value_input_option: 'USER_ENTERED')
   end
 
-  def update_values_from_simple_hash_array(spreadsheet_id:, range:, headers:, hsh_ary:)
+  def update_values_from_simple_hash_array(spreadsheet_id:, range:, hsh_ary:, headers: nil)
     request_body = Google::Apis::SheetsV4::ValueRange.new
-    values = [headers]
+    values = headers ? [headers] : []
     rows = hsh_ary.map(&:values)
     rows.each { |row| values << row }
     request_body.values = values
     @service.update_spreadsheet_value(spreadsheet_id, range, request_body, value_input_option: 'USER_ENTERED')
+  end
+
+  def append_values_from_simple_hash_array(spreadsheet_id:, range:, hsh_ary:, headers: nil)
+    values = headers ? [headers] : []
+    rows = hsh_ary.map(&:values)
+    rows.each { |row| values << row }
+    values_range = Google::Apis::SheetsV4::ValueRange.new(values:)
+    @service.append_spreadsheet_value(spreadsheet_id, range, values_range, value_input_option: 'USER_ENTERED')
   end
 
   def here_be_dragons(spreadsheet_id:, range:)

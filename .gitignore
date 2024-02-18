@@ -29,3 +29,21 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+.env
+# Google Token
+/config/credentials/google_client_secret.json
+# /config/credentials/google_token*
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+/spec/fixtures/finish_orders.txt
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+/bin/restart_dynos.sh

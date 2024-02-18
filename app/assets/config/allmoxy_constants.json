@@ -72,7 +72,8 @@
       327,
       328,
       333,
-      334
+      334,
+      335
     ]
   },
   "remake_report": {
@@ -311,6 +312,14 @@
         "caption": "doors_miter"
       },
       {
+        "value": 270,
+        "caption": "doors_edgebanded"
+      },
+      {
+        "value": 272,
+        "caption": "doors_microshaker"
+      },
+      {
         "value": 239,
         "caption": "drawers_solid"
       },
@@ -528,6 +537,18 @@
       "doors_miter": {
         "tags_any_product": [
           "doors_miter"
+        ],
+        "tags_none_product": null
+      },
+      "doors_edgebanded": {
+        "tags_any_product": [
+          "doors_edgebanded"
+        ],
+        "tags_none_product": null
+      },
+      "doors_microshaker": {
+        "tags_any_product": [
+          "doors_microshaker"
         ],
         "tags_none_product": null
       },
