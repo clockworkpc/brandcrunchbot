@@ -1,5 +1,39 @@
-<h1>Welcome to Brandcrunch Bot!</h1>
+  <div class="container">
+  <div class="row">
 
-<h2>Hello!</h2>
+<h1>Office Robot In the Cloud</h3>
 
-<p>Hello, Markus!  This will be your personal bot.</p>
+<% unless current_user %>
+  <ul>
+    <li><h3><%= link_to "Sign Up Page", new_user_registration_path %></h3></li>
+    <li><h3><%= link_to "Sign In Page", new_user_session_path %></h3></li>
+  </ul>
+
+  <p>Welcome to the Panhandle Door Office Robot in the cloud.  For now, all the Office Robot has to offer is various Allmoxy Tools.</p>
+  <p>If you have not yet signed up, please click "Sign Up" and create an account with your Panhandle Door email address.</p>
+  <p>Please not that only whitelisted Panhandle Door accounts are permitted to view and use Allmoxy Tools.  If you expect your account to have access, please contact the domain administrator to be added to the whitelist. </p>
+
+<% end %>
+</div>
+
+<% if current_user %>
+
+    <div class="row">
+
+      <p>Welcome, <%= current_user.email.split('@').first.capitalize %><p>
+      <h2><%= link_to "Scheduling Services", scheduling_services_path %> </h3>
+      <p>Here you will find forms to update the following:</p>
+      <ul>
+        <li>Doors Production Schedule Dashboard</li>
+        <li>Boxes Production Schedule Dashboard</li>
+        <li>Specialty Production Schedule Dashboard</li>
+        <li>Finish v5</li>
+      </ul>
+
+      <h2><%= link_to "Allmoxy Tools", allmoxy_tools_path %></h3>
+      <p>Here is the old form for refreshing scheduling inputs.</p>
+      <p>Please use <%= link_to "Scheduling Services", scheduling_services_path %> unless you are sure that it does not work.</p>
+      <p>These old forms will remain available until the Production Services forms have been thoroughly verified production.</p>
+    <% end %>
+    </div>
+  </div>

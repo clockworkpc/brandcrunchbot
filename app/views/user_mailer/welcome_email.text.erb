@@ -1,0 +1,13 @@
+Welcome to Office Robot in the Cloud
+
+You have successfully signed up to Office Robot in the Cloud
+
+The email address associated with your Office Robot account is <%= @user.email %>.
+
+<% if @user.authorized? %>
+  You have been authorized to use the automated Allmoxy tools.
+<% else %>
+  You have not been authorized to use the automated Allmoxy tools.
+<% end %>
+
+If you have any questions, please contact Alexander at alexander@panhandledoor.com
