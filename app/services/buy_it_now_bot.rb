@@ -15,6 +15,8 @@ class BuyItNowBot
 
       if price <= target_price
         puts "I will buy this domain at #{price}"
+        s_bid_amount = price
+        @gda.place_bid_or_purchase(domain_name:, s_bid_amount:)
         counter = 0
       else
         puts "I will not buy this domain at #{price}"

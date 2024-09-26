@@ -1,0 +1,71 @@
+name: brandcrunchbot
+
+services:
+  web:
+    build:
+      context: .             # Use the current directory as build context
+      dockerfile: Dockerfile.dev  # Use the Dockerfile in the current directory
+    stdin_open: true
+    tty: true
+    container_name: brandcrunchbot_web
+    command: bundle exec rails server -b 0.0.0.0
+    working_dir: /rails
+    volumes:
+      - .:/rails              # Mount the current directory to /rails inside the container
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=postgres://brandcrunchbot:password123@db:5432/brandcrunchbot_development
+      - REDIS_URL=redis://redis:6379/0
+      - INSIDE_DOCKER=true
+      - TERM=xterm-256color
+      - PRYRC=/rails/.pryrc
+      - GUARDFILE=/rails/Guardfile
+    ports:
+      - "3000:3000"           # Expose port 3000 for the Rails app
+    depends_on:
+      - db                    # Ensure the db service is running before starting the web service
+      - test_db
+      - redis                 # Ensure Redis is running before starting the web service
+    networks:
+      - brandcrunchbot_network           # Use a custom network for communication
+
+  db:
+    image: postgres:latest
+    container_name: brandcrunchbot_db
+    environment:
+      POSTGRES_USER: brandcrunchbot
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: brandcrunchbot_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist PostgreSQL data
+    networks:
+      - brandcrunchbot_network
+
+  test_db:
+    image: postgres:latest
+    container_name: brandcrunchbot_test_db
+    environment:
+      POSTGRES_USER: brandcrunchbot
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: brandcrunchbot_test
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - brandcrunchbot_network
+
+  redis:
+    image: redis:latest
+    container_name: brandcrunchbot_redis
+    volumes:
+      - redis_data:/data  # Persist Redis data
+    networks:
+      - brandcrunchbot_network
+
+networks:
+  brandcrunchbot_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_test_data:
+  redis_data:
