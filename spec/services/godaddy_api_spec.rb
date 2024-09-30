@@ -5,21 +5,59 @@ RSpec.describe GodaddyApi do
     @service = described_class.new
   end
 
+  let(:auction_details_response) do
+    { 'IsValid' => 'True',
+      'DomainName' => 'alephdigital.com',
+      'AuctionEndTime' => '10/01/2024 10:11 AM (PDT)',
+      'BidCount' => '1',
+      'Price' => '$10',
+      'ValuationPrice' => '$2,017',
+      'Traffic' => '0',
+      'CreateDate' => '08/27/2014',
+      'BidIncrementAmount' => '$5',
+      'AuctionModel' => 'Bid',
+      'AuditDateTime' => '9/30/2024 11:46:45 AM',
+      'IsHighestBidder' => 'False' }.to_json
+  end
+
+  # describe '#get_auction_details' do
+  #   it 'parses the auction details correctly' do
+  #     domain_name = 'gourmetbunny.com'
+  #
+  #     # Stub the SOAP request
+  #     stub_request(:post, 'https://example.com/soap_endpoint') # Replace with actual SOAP endpoint
+  #       .with(body: /GetAuctionDetails/) # Match the SOAP action name
+  #       .to_return(status: 200, body: auction_details_response, headers: {})
+  #
+  #     # Create an instance of the service and call the method
+  #     service = described_class.new
+  #     result = service.get_auction_details(domain_name:)
+  #
+  #     # Expect the parsed result to match the auction details
+  #     expect(result).to eq(JSON.parse(auction_details_response))
+  #   end
+  # end
+
   describe 'Domain Info' do
-    it 'GetAuctionDetailsByDomainName', focus: false do
+    it 'GetAuctionDetailsByDomainName' do
       domain_name = 'gourmetbunny.com'
       res = @service.get_auction_details_by_domain_name(domain_name:)
-      res.each do |k, v|
-        puts Rainbow("#{k}: #{v}").orange
-      end
+      expect(res).to eq(auction_details)
     end
 
-    it 'GetAuctionDetails', focus: false do
-      domain_name = 'gourmetbunny.com'
+    it 'GetAuctionDetails', :focus do
+      domain_name = 'alephdigital.com'
+      # allow(@service)
+      #   .to receive(:get_auction_details)
+      #   .with(domain_name:)
+      #   .and_return(auction_details)
+      #
+      # Invoke the method
       res = @service.get_auction_details(domain_name:)
-      res.each do |k, v|
-        puts Rainbow("#{k}: #{v}").orange
-      end
+      require 'pry'; binding.pry
+
+      # Expect the response to match the stubbed auction details
+      expect(res).to eq(auction_details)
     end
   end
 

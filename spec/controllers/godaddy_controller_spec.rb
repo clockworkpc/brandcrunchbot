@@ -14,8 +14,12 @@ RSpec.describe GodaddyController, type: :controller do
 
   let(:response_json) do
     { 'sheetName' => 'domains',
-      'changes' => { 'R103C1' => 'goodgood.com', 'R103C2' => '', 'R103C3' => '5', 'R104C1' => 'feelsgood.com.au',
-                     'R104C2' => '', 'R104C3' => '5' } }.to_json
+      'changes' => { 'R103C1' => 'goodgood.com',
+                     'R103C2' => '',
+                     'R103C3' => '5',
+                     'R104C1' => 'feelsgood.com.au',
+                     'R104C2' => '',
+                     'R104C3' => '5' } }.to_json
   end
 
   describe 'POST #google_sheet' do
