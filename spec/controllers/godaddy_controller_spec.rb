@@ -22,7 +22,6 @@ RSpec.describe GodaddyController, type: :controller do
     it 'returns 200 with params in JSON', :focus do
       post :google_sheet, params: webhook_params
       expect(response).to have_http_status(:ok)
-      require 'pry'; binding.pry
       expect(response.body).to eq(response_json)
     end
   end
