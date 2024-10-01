@@ -12,6 +12,11 @@ services:
     working_dir: /rails
     volumes:
       - .:/rails              # Mount the current directory to /rails inside the container
+      - ~/.config/pry/pryrc:/rails/.pryrc:ro
+      - ~/.config/guard/Guardfile:/rails/Guardfile:ro
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+      - /run/user/1000/bus:/run/user/1000/bus
+      - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - RAILS_ENV=development
       - DATABASE_URL=postgres://brandcrunchbot:password123@db:5432/brandcrunchbot_development
@@ -20,6 +25,10 @@ services:
       - TERM=xterm-256color
       - PRYRC=/rails/.pryrc
       - GUARDFILE=/rails/Guardfile
+      - DISPLAY=${DISPLAY}
+      - UID=1000
+      - GID=1000
+
     ports:
       - "3000:3000"           # Expose port 3000 for the Rails app
     depends_on:

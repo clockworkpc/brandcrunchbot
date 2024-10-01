@@ -53,6 +53,7 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'guard-rubocop'
   gem 'pry-byebug'
+  gem 'pry-rails'
   gem 'pry-theme'
   gem 'rspec'
   gem 'rspec-rails'

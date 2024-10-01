@@ -112,7 +112,6 @@ class GodaddyApi
 
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
     response = https.request(request)
-    require 'pry'; binding.pry
     parse_auction_list(response)
   end
 

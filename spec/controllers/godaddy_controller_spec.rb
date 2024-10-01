@@ -4,12 +4,38 @@ RSpec.describe GodaddyController, type: :controller do
   render_views
 
   let(:webhook_params) do
-    { 'sheetName' => 'domains',
-      'changes' => { 'R103C1' => 'goodgood.com', 'R103C2' => '', 'R103C3' => 5, 'R104C1' => 'feelsgood.com.au',
-                     'R104C2' => '', 'R104C3' => 5 },
-      'godaddy' => { 'sheetName' => 'domains',
-                     'changes' => { 'R103C1' => 'goodgood.com', 'R103C2' => '', 'R103C3' => 5, 'R104C1' => 'feelsgood.com.au',
-                                    'R104C2' => '', 'R104C3' => 5 } } }
+    ActionController::Parameters.new({
+                                       'sheetName' => 'domains',
+                                       'changes' => {
+                                         'R115' => {
+                                           'C1' => 'zerobeast.com',
+                                           'C2' => '',
+                                           'C3' => 11
+                                         },
+                                         'R116' => {
+                                           'C1' => 'zeropump.com',
+                                           'C2' => '',
+                                           'C3' => 12
+                                         }
+                                       },
+                                       'controller' => 'godaddy',
+                                       'action' => 'google_sheet',
+                                       'godaddy' => ActionController::Parameters.new({
+                                                                                       'sheetName' => 'domains',
+                                                                                       'changes' => {
+                                                                                         'R115' => {
+                                                                                           'C1' => 'zerobeast.com',
+                                                                                           'C2' => '',
+                                                                                           'C3' => 11
+                                                                                         },
+                                                                                         'R116' => {
+                                                                                           'C1' => 'zeropump.com',
+                                                                                           'C2' => '',
+                                                                                           'C3' => 12
+                                                                                         }
+                                                                                       }
+                                                                                     }).permit!
+                                     }).permit!
   end
 
   let(:response_json) do

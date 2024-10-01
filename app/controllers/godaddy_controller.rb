@@ -3,23 +3,18 @@ class GodaddyController < ApplicationController
 
   # TODO: Schedule job in response to webhook
   def google_sheet
-    # permitted_params = params[:godaddy][:changes]
-    permitted_params = godaddy_params
+    # If the parameters are wrapped under "godaddy", use the wrapped params, otherwise use the regular params
+    data = params[:godaddy] || params
 
-    godaddy_params[:changes].each do |k, hsh|
-      domain_name = hsh['C1']
-      buy_it_now = hsh['C3']
-      Rails.logger.info("domain_name: #{domain_name}, buy_it_now: #{buy_it_now}")
-    end
+    # Permit the nested parameters properly
+    permitted_data = data.permit(:sheetName, changes: {})
 
-    ProcessDomainsJob.perform_later(godaddy_params[:changes])
+    # Process or enqueue a job with permitted parameters
+    ProcessDomainsJob.perform_later(permitted_data.to_h)
 
-    # brandcrunchbot_web      | Key: R114, Value: {"C1"=>"xploreworld.com", "C2"=>"", "C3"=>11}
-    # brandcrunchbot_web      | Key: R115, Value: {"C1"=>"zerobeast.com", "C2"=>"", "C3"=>11}
-    # brandcrunchbot_web      | Key: R116, Value: {"C1"=>"zeropump.com", "C2"=>"", "C3"=>11}
-    #
-
-    render json: permitted_params.to_json, status: :ok
+    render json: { message: 'Data received successfully' }, status: :ok
+  rescue ActionController::UnfilteredParameters => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   private
