@@ -73,9 +73,11 @@ class BuyItNowBotScheduler
     datetime_str = res['AuctionEndTime']
     return unless datetime_str
 
-    local_time = Time.parse(datetime_str)
-    Rails.logger.info("localtime #{local_time}".red)
-    utc_time = local_time.utc
+    time_without_tz = datetime_str.gsub(/\s*\([A-Z]+\)\s*/, '')
+    parsed_time = Time.strptime(time_without_tz, '%m/%d/%Y %I:%M %p')
+    Rails.logger.info("parsed time #{parsed_time}".red)
+    final_time = parsed_time + (7 * 3600)
+    utc_time = final_time.utc
     Rails.logger.info("UTC time #{utc_time}".red)
     utc_time
   end
@@ -103,7 +105,7 @@ class BuyItNowBotScheduler
     auction_end_time ||= auction.auction_end_time
     Rails.logger.info(auction_end_time.class)
     Rails.logger.info(auction_end_time.to_s.green)
-    Rails.logger.info("#{auction_end_time - 5}".green)
+    Rails.logger.info((auction_end_time - 5).to_s.green)
     @bb.delay(run_at: auction_end_time - 5).call(auction)
   end
 
