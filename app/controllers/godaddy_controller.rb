@@ -5,8 +5,8 @@ class GodaddyController < ApplicationController
   def google_sheet
     data = params[:godaddy] || params
     range = "#{data['sheet_name']}!A2:C"
-    service = JobScheduler.new
-    service.delay.call(range:)
+    service = BuyItNowBotScheduler.new
+    service.call(range:)
     render json: { message: 'Data received successfully' }, status: :ok
   rescue ActionController::UnfilteredParameters => e
     render json: { error: e.message }, status: :unprocessable_entity
