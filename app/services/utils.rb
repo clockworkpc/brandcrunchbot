@@ -43,7 +43,7 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.latest_csv_in_tmp(str: nil)
-    Dir.glob("#{Rails.root}/tmp/#{str}**.csv").max_by { |f| File.mtime(f) }
+    Dir.glob("#{Rails.root.join("tmp/#{str}**.csv")}").max_by { |f| File.mtime(f) }
   end
 
   def self.csv_up_to_date?(str:)
@@ -53,7 +53,7 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.latest_product_attribute_selection_directory
-    Dir.glob("#{Rails.root}/tmp/product_attributes/product_attributes**")
+    Dir.glob("#{Rails.root.join('tmp/product_attributes/product_attributes**')}")
        .select { |f| File.directory?(f) }
        .max_by { |dir| File.mtime(dir) }
   end
@@ -250,5 +250,22 @@ class Utils # rubocop:disable Metrics/ClassLength
 
   def self.start_dates_to_date
     Utils.start_dates_this_year.select { |d| d <= Date.current }
+  end
+
+  def self.extract_domain_name_from_scheduled_job(delayed_job)
+    delayed_job.handler
+               .scan(/name: domain\s+value_before_type_cast: [\w\.]+/).first
+               .gsub('name: domain', '')
+               .gsub('value_before_type_cast: ', '')
+               .scan(/[\w\.]+/).first
+  end
+
+  def self.list_scheduled_jobs
+    Delayed::Job.all.map do |job|
+      {
+        domain: Utils.extract_domain_name_from_scheduled_job(job),
+        run_at: job.run_at
+      }
+    end
   end
 end
