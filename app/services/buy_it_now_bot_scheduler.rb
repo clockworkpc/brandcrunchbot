@@ -73,13 +73,7 @@ class BuyItNowBotScheduler
     datetime_str = res['AuctionEndTime']
     return unless datetime_str
 
-    time_without_tz = datetime_str.gsub(/\s*\([A-Z]+\)\s*/, '')
-    parsed_time = Time.strptime(time_without_tz, '%m/%d/%Y %I:%M %p')
-    Rails.logger.info("parsed time #{parsed_time}".red)
-    final_time = parsed_time + (7 * 3600)
-    utc_time = final_time.utc
-    Rails.logger.info("UTC time #{utc_time}".red)
-    utc_time
+    Utils.convert_to_utc(datetime_str:)
   end
 
   def fetch_auction_details(auction:)

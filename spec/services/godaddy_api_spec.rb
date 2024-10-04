@@ -20,6 +20,17 @@ RSpec.describe GodaddyApi do
       'IsHighestBidder' => 'False' }.to_json
   end
 
+  let(:successful_instant_purchase) do
+    { 'Result' => 'Success',
+      'Domain' => 'joinidentity.com',
+      'Price' => '$11.00',
+      'RenewalPrice' => '$10.99',
+      'PrivateRegistration' => 'N/A',
+      'ICANNFee' => '$0.18',
+      'Taxes' => '$0.00',
+      'Total' => '$22.17',
+      'OrderID' => '3334609888' }
+  end
   # describe '#get_auction_details' do
   #   it 'parses the auction details correctly' do
   #     domain_name = 'gourmetbunny.com'
