@@ -25,6 +25,46 @@ class GodaddyApi
     parse_auction_details(response)
   end
 
+  def parse_estimate_closeout_domain_price(response)
+    doc = Nokogiri::XML(response.body)
+
+    namespaces = {
+      'soap' => 'http://www.w3.org/2003/05/soap-envelope',
+      'ns' => 'GdAuctionsBiddingWSAPI_v2'
+    }
+
+    response_node = doc.xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
+    return unless response_node
+
+    xml_fragment = response_node.first.children.first.text
+    parsed_fragment = Nokogiri::XML(xml_fragment)
+
+    {
+      result: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Result'],
+      domain: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Domain'],
+      price: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Price'],
+      renewal_price: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['RenewalPrice'],
+      icann_fee: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['ICANNFee'],
+      taxes: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Taxes'],
+      private_registration: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['PrivateRegistration'],
+      total: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Total'],
+      closeout_domain_price_key: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['closeoutDomainPriceKey']
+    }
+  end
+
+  def estimate_closeout_domain_price(domain_name:)
+    soap_action_name = 'EstimateCloseoutDomainPrice'
+    basename = 'estimate_closeout_domain_price'
+    add_privacy = false
+    kwargs = { domain_name:, add_privacy: }
+    https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
+    response = https.request(request)
+    Rails.logger.info("#{domain_name}: #{response.code}")
+    return unless response.code.to_i == 200
+
+    parse_estimate_closeout_domain_price(response)
+  end
+
   def get_auction_list(page_number:, rows_per_page:, begins_with_keyword:)
     soap_action_name = 'GetAuctionList'
     basename = 'get_auction_list'
@@ -115,11 +155,7 @@ class GodaddyApi
     parse_auction_list(response)
   end
 
-  # TODO: Need to test in OTE if possible
   def instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
-    key = Rails.application.credentials[:ote_key]
-    secret = Rails.application.credentials[:ote_secret]
-
     soap_action_name = 'InstantPurchaseCloseoutDomain'
     basename = 'instant_purchase_closeout_domain'
     kwargs = {
@@ -131,33 +167,12 @@ class GodaddyApi
     }
 
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
-    response = https.request(request)
-    require 'pry'; binding.pry
-    parse_auction_list(response)
+    https.request(request)
+  end
 
-    # TODO: Ascertain whether OTE credentials can be used
-    # TODO: Call on domain that has already been purchased
-    # TODO: Test in real time with Markus
-    # TODO: Rake task
-    # TODO: Schedule rake task in heroku
-    # TODO: Add button in UI?
-
-    # POST /gdAuctionsWSAPI/gdAuctionsBiddingWS_v2.asmx HTTP/1.1
-    # Host: auctions.godaddy.com
-    # Content-Type: application/soap+xml; charset=utf-8
-    # Content-Length: length
-
-    # <?xml version="1.0" encoding="utf-8"?>
-    # <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-    # <soap12:Body>
-    # <InstantPurchaseCloseoutDomain xmlns="GdAuctionsBiddingWSAPI_v2">
-    #   <domainName>string</domainName>
-    #   <closeoutDomainPriceKey>string</closeoutDomainPriceKey>
-    #   <acceptUTOS>boolean</acceptUTOS>
-    #   <acceptAMA>boolean</acceptAMA>
-    #   <acceptDNRA>boolean</acceptDNRA>
-    # </InstantPurchaseCloseoutDomain>
-    # </soap12:Body>
-    # </soap12:Envelope>
+  def purchase_instantly(domain_name:)
+    cdpr = estimate_closeout_domain_price(domain_name:)
+    closeout_domain_price_key = cdpr[:closeout_domain_price_key]
+    instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
   end
 end

@@ -45,7 +45,7 @@ RSpec.describe GodaddyApi do
       expect(res).to eq(auction_details)
     end
 
-    it 'GetAuctionDetails', :focus do
+    it 'GetAuctionDetails', focus: false do
       domain_name = 'alephdigital.com'
       # allow(@service)
       #   .to receive(:get_auction_details)
@@ -82,6 +82,24 @@ RSpec.describe GodaddyApi do
 
       res = @service.place_bid_or_purchase(domain_name:, s_bid_amount:)
       pp res
+    end
+  end
+
+  describe 'Purchasing at Buy It Now price' do
+    it 'gets the key from EstimateCloseoutDomainPrice' do
+      domain_name = 'wincademy.com'
+      # expect { @service.estimate_closeout_domain_price(domain_name:) }.not_to raise_error
+      res = @service.estimate_closeout_domain_price(domain_name:)
+      key = res[:closeout_domain_price_key]
+      expect(key).to match(/[a-zA-Z0-9]/)
+      expect(key.length).to eq(168)
+    end
+
+    it 'gets the key from the EstimateCloseoutDomainPrice and purchases the domain' do
+      domain_name = 'wincademy.com'
+      cdpr = @service.estimate_closeout_domain_price(domain_name:)
+      closeout_domain_price_key = cdpr[:closeout_domain_price_key]
+      res = @service.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
     end
   end
 end
