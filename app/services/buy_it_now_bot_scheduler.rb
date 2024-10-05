@@ -132,6 +132,9 @@ class BuyItNowBotScheduler
     deactivate_passe_auctions(values:)
     active_auctions = Auction.where(active: true)
     Rails.logger.info(Delayed::Job.all)
-    active_auctions.each { |auction| schedule_job(auction:) }
+    active_auctions.each do |auction|
+      schedule_job(auction:)
+      sleep 0.25
+    end
   end
 end

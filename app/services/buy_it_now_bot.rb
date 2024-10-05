@@ -39,8 +39,7 @@ class BuyItNowBot < ApplicationJob
 
       if !dt.today? && dt > DateTime.now
         Rails.logger.info "Scheduling a job for #{auction_end_time}"
-        bot_instance = self.class.new
-        bot_instance.delay(run_at: dt - 5).call(auction)
+        self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
         return { rescheduled: true }
       end
 
