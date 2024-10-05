@@ -53,9 +53,14 @@ class BuyItNowBot < ApplicationJob
       response = @gda.purchase_instantly(domain_name:)
       hsh = parse_instant_purchase_response(response)
       if hsh['Result'] == 'Success'
+        Rails.logger.info("Successful purchase of #{domain_name}".green)
         result[:success] = true
-        result
+      else
+        Rails.logger.info('No purchase made'.red)
+        result[:valid] = false
       end
+
+      result
 
     else
       Rails.logger.info "Price #{price} is higher than BIN price #{bin_price}"
@@ -72,8 +77,8 @@ class BuyItNowBot < ApplicationJob
       self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
       Rails.logger.info 'Trying again...'
       result[:rescheduled] = true
-      result
     end
+    result
   end
 
   def perform(auction, gda = nil)
