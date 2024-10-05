@@ -15,6 +15,21 @@ class BuyItNowBot < ApplicationJob
             .first.to_h
   end
 
+  def scheduled_job(auction)
+    # Fetch all jobs related to the BuyItNowBot class
+    delayed_jobs = Delayed::Job.where('handler LIKE ?', '%BuyItNowBot%')
+
+    # Check if any job has the auction with id 142 as an argument
+    delayed_jobs.detect do |job|
+      job_wrapper = YAML.safe_load(job.handler,
+                                   permitted_classes: [ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper])
+      job_data = job_wrapper.job_data
+      auction_gid = job_data['arguments'].first['_aj_globalid']
+      auction_obj = GlobalID::Locator.locate(auction_gid)
+      auction_obj.id == auction.id
+    end
+  end
+
   def purchase_or_ignore(domain_name:, bin_price:)
     result = { valid: true, rescheduled: false, success: false }
 
@@ -43,13 +58,15 @@ class BuyItNowBot < ApplicationJob
       end
 
     else
-      Rails.logger.info "Price #{price} is higher than target price #{bin_price}"
+      Rails.logger.info "Price #{price} is higher than BIN price #{bin_price}"
       auction_end_time = auction_details['AuctionEndTime']
       auction = Auction.find_by(domain: domain_name)
       auction.update!(auction_end_time:)
-      dt = Utils.convert_to_utc(datetime_str: auction_end_time)
+      # dt = Utils.convert_to_utc(datetime_str: auction_end_time)
 
-      return result unless !dt.today? && dt > DateTime.now
+      job_enqueued = scheduled_job(auction)
+      extant_job = job_enqueued&.run_at && job_enqueued.run_at > Time.now.utc
+      return result if extant_job
 
       Rails.logger.info "Scheduling a job for #{auction_end_time}"
       self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
