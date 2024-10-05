@@ -16,12 +16,20 @@ class BuyItNowBot < ApplicationJob
   end
 
   def purchase_or_ignore(domain_name:, bin_price:)
+    result = { valid: true, rescheduled: false, success: false }
+
     auction_details = @gda.get_auction_details(domain_name:)
     Rails.logger.info(auction_details)
-    return { valid: false } if auction_details['IsValid'] == 'False'
+    if auction_details['IsValid'] == 'False'
+      result[:valid] = false
+      return result
+    end
 
     Rails.logger.info("auction_details: #{auction_details}")
-    return if auction_details['Price'].nil?
+    if auction_details['Price'].nil?
+      result[:valid] = false
+      return result
+    end
 
     price = auction_details['Price'].sub('$', '').to_i
 
@@ -29,7 +37,11 @@ class BuyItNowBot < ApplicationJob
       Rails.logger.info "I will buy this domain at #{price}"
       response = @gda.purchase_instantly(domain_name:)
       hsh = parse_instant_purchase_response(response)
-      { success: true } if hsh['Result'] == 'Success'
+      if hsh['Result'] == 'Success'
+        result[:success] = true
+        result
+      end
+
     else
       Rails.logger.info "Price #{price} is higher than target price #{bin_price}"
       auction_end_time = auction_details['AuctionEndTime']
@@ -37,13 +49,13 @@ class BuyItNowBot < ApplicationJob
       auction.update!(auction_end_time:)
       dt = Utils.convert_to_utc(datetime_str: auction_end_time)
 
-      if !dt.today? && dt > DateTime.now
-        Rails.logger.info "Scheduling a job for #{auction_end_time}"
-        self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
-        return { rescheduled: true }
-      end
+      return result unless !dt.today? && dt > DateTime.now
 
+      Rails.logger.info "Scheduling a job for #{auction_end_time}"
+      self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
       Rails.logger.info 'Trying again...'
+      result[:rescheduled] = true
+      result
     end
   end
 
@@ -61,14 +73,15 @@ class BuyItNowBot < ApplicationJob
 
       begin
         result = purchase_or_ignore(domain_name:, bin_price:)
+
+        # Domain has been purchased (200 and some other conditions)
+        break if result[:success] == true
+
         # Domain not available anymore
         break if result[:valid] == false
 
         # Reschedule for future Auction
         break if result[:rescheduled] == true
-
-        # Domain has been purchased (200 and some other conditions)
-        break if result&.code.to_i == 200
 
         # Domain has not been purchased because the price is too high
         # Continue trying until the counter gets to 0

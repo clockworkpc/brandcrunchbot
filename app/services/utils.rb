@@ -252,12 +252,15 @@ class Utils # rubocop:disable Metrics/ClassLength
     Utils.start_dates_this_year.select { |d| d <= Date.current }
   end
 
-  def self.extract_domain_name_from_scheduled_job(delayed_job)
-    delayed_job.handler
-               .scan(/name: domain\s+value_before_type_cast: [\w\.]+/).first
-               .gsub('name: domain', '')
-               .gsub('value_before_type_cast: ', '')
-               .scan(/[\w\.]+/).first
+  def self.extract_domain_name_from_scheduled_job(job)
+    job_wrapper = YAML.safe_load(job.handler,
+                                 permitted_classes: [ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper])
+
+    job_data = job_wrapper.job_data
+    auction_gid = job_data['arguments'].first['_aj_globalid']
+
+    auction = GlobalID::Locator.locate(auction_gid)
+    auction.domain
   end
 
   def self.list_scheduled_jobs
