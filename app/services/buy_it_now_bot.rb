@@ -1,7 +1,5 @@
-class BuyItNowBot
-  def initialize(gda: false)
-    @gda = gda || GodaddyApi.new
-  end
+class BuyItNowBot < ApplicationJob
+  queue_as :default
 
   def parse_instant_purchase_response(response)
     doc = Nokogiri::XML(response.body)
@@ -50,7 +48,9 @@ class BuyItNowBot
     end
   end
 
-  def call(auction)
+  def perform(auction, gda = nil)
+    @gda = gda || GodaddyApi.new
+
     domain_name = auction.domain
     bin_price = auction.bin_price
     counter = 10

@@ -100,7 +100,7 @@ class BuyItNowBotScheduler
     Rails.logger.info(auction_end_time.class)
     Rails.logger.info(auction_end_time.to_s.green)
     Rails.logger.info((auction_end_time - 5).to_s.green)
-    @bb.delay(run_at: auction_end_time - 5).call(auction)
+    BuyItNowBot.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
   end
 
   def schedule_job(auction:)

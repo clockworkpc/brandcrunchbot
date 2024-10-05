@@ -1,6 +1,5 @@
 class DummyJobScheduler
   def call
-    dj = DummyJob.new
-    Delayed::Job.enqueue dj, run_at: Time.now.utc + 5
+    DummyJob.set(wait: 5.seconds).perform_later('World')
   end
 end
