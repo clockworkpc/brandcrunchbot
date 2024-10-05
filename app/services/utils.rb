@@ -281,4 +281,25 @@ class Utils # rubocop:disable Metrics/ClassLength
     Rails.logger.info("UTC time #{utc_time}".red)
     utc_time
   end
+
+  def self.testdjs
+    Rails.logger.info(Time.now.utc)
+    Rails.logger.info(Delayed::Job.count)
+    djs = DummyJobScheduler.new
+    Delayed::Job.order(created_at: :desc).first
+    djs.call
+    my_job = Delayed::Job.order(created_at: :desc).first
+    Rails.logger.info(my_job)
+    Rails.logger.info(Time.now.utc)
+    Rails.logger.info(Delayed::Job.count)
+
+    start_time = Time.now
+
+    while Time.now - start_time < 10
+      # Your loop code here
+      Rails.logger.info(Delayed::Job.count)
+      sleep 1
+    end
+    Rails.logger.info(Time.now.utc)
+  end
 end
