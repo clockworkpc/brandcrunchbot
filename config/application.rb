@@ -11,6 +11,17 @@ module Brandcrunch
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     config.active_job.queue_adapter = :delayed_job
+    config.after_initialize do
+      # Psych Allow YAML Classes
+      config.active_record.yaml_column_permitted_classes = [
+        Symbol, Hash, Array,
+        Delayed::PerformableMethod,
+        ActiveSupport::HashWithIndifferentAccess,
+        ActiveModel::Attribute.const_get(:FromDatabase),
+        User,
+        Time
+      ]
+    end
 
     # Configuration for the application, engines, and railties goes here.
     #

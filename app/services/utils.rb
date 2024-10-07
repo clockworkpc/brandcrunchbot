@@ -252,23 +252,33 @@ class Utils # rubocop:disable Metrics/ClassLength
     Utils.start_dates_this_year.select { |d| d <= Date.current }
   end
 
-  def self.extract_domain_name_from_scheduled_job(job)
-    job_wrapper = YAML.safe_load(job.handler,
-                                 permitted_classes: [ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper])
+  def self.extract_job_auction(job) # rubocop:disable Metrics/MethodLength
+    parsed_data = YAML.safe_load(
+      job.handler,
+      permitted_classes: [
+        ActiveModel::Attribute.const_get(:FromDatabase),
+        Delayed::PerformableMethod,
+        BuyItNowBot,
+        GodaddyApi,
+        Auction,
+        Symbol,
+        ActiveSupport::TimeWithZone,
+        Time,
+        ActiveSupport::TimeZone
+      ], aliases: true
+    )
 
-    job_data = job_wrapper.job_data
-    auction_gid = job_data['arguments'].first['_aj_globalid']
+    return unless parsed_data.args
 
-    auction = GlobalID::Locator.locate(auction_gid)
-    auction.domain
+    parsed_data.args.find { |arg| arg.instance_of?(Auction) }
   end
 
   def self.list_scheduled_jobs
     Delayed::Job.all.map do |job|
-      {
-        domain: Utils.extract_domain_name_from_scheduled_job(job),
-        run_at: job.run_at
-      }
+      auction = extract_job_auction(job)
+      domain = auction.domain
+      run_at = job.run_at
+      { domain:, run_at: }
     end
   end
 

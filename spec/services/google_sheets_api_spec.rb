@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe GoogleSheetsApi do
-  let(:spreadsheet_id) { '1VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8' }
+  let(:spreadsheet_id) { '2VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8' }
 
   describe 'Inputs' do
-    it 'reads values from domains', focus: false do
+    it 'reads values from domains', :focus do
       gsa = described_class.new
       range = 'domains!A1:C'
       res = gsa.get_spreadsheet_values(spreadsheet_id:, range:)

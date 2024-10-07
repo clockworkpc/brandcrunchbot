@@ -1,6 +1,8 @@
 require 'time'
 
 class BuyItNowBotScheduler
+  attr_reader :gsa, :gda, :bb
+
   def initialize
     @gsa = GoogleSheetsApi.new
     @gda = GodaddyApi.new
@@ -122,6 +124,13 @@ class BuyItNowBotScheduler
     schedule_buy_it_now_bot(auction: updated_auction)
   rescue StandardError => e
     Rails.logger.info(e)
+  end
+
+  def append_jobs_to_logs(spreadsheet_id: nil)
+    hsh_ary = Utils.list_scheduled_jobs
+    spreadsheet_id ||= Rails.application.credentials[:spreadsheet_id]
+    range = 'jobs!A2:B'
+    @gsa.append_values_from_simple_hash_array(spreadsheet_id:, range:, hsh_ary:)
   end
 
   def call(range: 'domains!A1:C')
