@@ -8,21 +8,50 @@ class GoogleSheetsApi
     @service.authorization = authorize
   end
 
+  # def get_credentials(authorizer:, user_id:)
+  #   base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
+  #   credentials = authorizer.get_credentials(user_id)
+  #
+  #   # TODO: Use a callback to monitor the number OauthSession records
+  #   if credentials.nil?
+  #     url = authorizer.get_authorization_url(base_url:)
+  #     puts "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}"
+  #     puts 'Have you authorised the application?'
+  #     puts '1. Yes'
+  #     puts '0. No'
+  #     response = gets.strip.to_i
+  #     code = OauthSession.last.code if response == 1
+  #     authorizer.get_and_store_credentials_from_code(user_id:, code:, base_url:)
+  #   else
+  #     credentials
+  #   end
+  # end
+
   def get_credentials(authorizer:, user_id:)
     base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
     credentials = authorizer.get_credentials(user_id)
 
-    # TODO: Use a callback to monitor the number OauthSession records
     if credentials.nil?
+      # Token is missing, request authorization
       url = authorizer.get_authorization_url(base_url:)
-      puts "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}"
-      puts 'Have you authorised the application?'
-      puts '1. Yes'
-      puts '0. No'
-      response = gets.strip.to_i
-      code = OauthSession.last.code if response == 1
-      authorizer.get_and_store_credentials_from_code(user_id:, code:, base_url:)
+      Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
+
+      # Prompt user for authorization if needed
+      response = OauthSession.last
+      raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
+
+      Rails.logger.info 'Authorization code found, exchanging for credentials...'
+      authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
+
     else
+      Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
+
+      # Ensure token refresh if it's expired
+      if credentials.expired?
+        Rails.logger.info 'Access token expired, refreshing token...'
+        credentials.refresh!
+      end
+
       credentials
     end
   end
