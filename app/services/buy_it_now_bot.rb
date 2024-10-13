@@ -86,7 +86,7 @@ class BuyItNowBot < ApplicationJob
 
     domain_name = auction.domain
     bin_price = auction.bin_price
-    counter = 10
+    counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
     running = true
     while running
       counter -= 1
@@ -94,7 +94,9 @@ class BuyItNowBot < ApplicationJob
       break if counter.zero?
 
       begin
-        result = purchase_or_ignore(domain_name:, bin_price:)
+        result = api_rate_limiter.limit_rate(
+          method(:purchase_or_ignore), domain_name:, bin_price:
+        )
 
         # Domain has been purchased (200 and some other conditions)
         break if result[:success] == true
@@ -105,13 +107,13 @@ class BuyItNowBot < ApplicationJob
         # Reschedule for future Auction
         break if result[:rescheduled] == true
 
-        # Domain has not been purchased because the price is too high
-        # Continue trying until the counter gets to 0
+      # Domain has not been purchased because the price is too high
+      # Continue trying until the counter gets to 0
       rescue StandardError => e
         Rails.logger.info(e)
       end
 
-      sleep 0.5
+      sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
 
     end
   end
