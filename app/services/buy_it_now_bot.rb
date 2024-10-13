@@ -94,7 +94,9 @@ class BuyItNowBot < ApplicationJob
       break if counter.zero?
 
       begin
-        result = purchase_or_ignore(domain_name:, bin_price:)
+        result = api_rate_limiter.limit_rate(
+          method(:purchase_or_ignore), domain_name:, bin_price:
+        )
 
         # Domain has been purchased (200 and some other conditions)
         break if result[:success] == true
@@ -105,8 +107,8 @@ class BuyItNowBot < ApplicationJob
         # Reschedule for future Auction
         break if result[:rescheduled] == true
 
-        # Domain has not been purchased because the price is too high
-        # Continue trying until the counter gets to 0
+      # Domain has not been purchased because the price is too high
+      # Continue trying until the counter gets to 0
       rescue StandardError => e
         Rails.logger.info(e)
       end
