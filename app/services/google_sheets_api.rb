@@ -8,6 +8,19 @@ class GoogleSheetsApi
     @service.authorization = authorize
   end
 
+  def request_new_authorization(authorizer, user_id, base_url)
+    # Token is missing or invalid, request authorization
+    url = authorizer.get_authorization_url(base_url:)
+    Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
+
+    # Prompt user for authorization if needed
+    response = OauthSession.last
+    raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
+
+    Rails.logger.info 'Authorization code found, exchanging for credentials...'
+    authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
+  end
+
   # def get_credentials(authorizer:, user_id:)
   #   base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
   #   credentials = authorizer.get_credentials(user_id)
@@ -27,33 +40,33 @@ class GoogleSheetsApi
   #   end
   # end
 
-  def get_credentials(authorizer:, user_id:)
-    base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
-    credentials = authorizer.get_credentials(user_id)
+def get_credentials(authorizer:, user_id:)
+  base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
+  credentials = authorizer.get_credentials(user_id)
 
-    if credentials.nil?
-      # Token is missing, request authorization
-      url = authorizer.get_authorization_url(base_url:)
-      Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
+  if credentials.nil?
+    # Token is missing, request authorization
+    request_new_authorization(authorizer, user_id, base_url)
 
-      # Prompt user for authorization if needed
-      response = OauthSession.last
-      raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
+  else
+    Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
 
-      Rails.logger.info 'Authorization code found, exchanging for credentials...'
-      authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
-
-    else
-      Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
-
-      # Ensure token refresh if it's expired
-      if credentials.expired?
-        Rails.logger.info 'Access token expired, refreshing token...'
+    # Ensure token refresh if it's expired
+    if credentials.expired?
+      Rails.logger.info 'Access token expired, attempting to refresh token...'
+      begin
         credentials.refresh!
+      rescue Signet::AuthorizationError => e
+        if e.message.include?('invalid_grant')
+          Rails.logger.error 'Refresh token is invalid or revoked. Reauthorizing...'
+          request_new_authorization(authorizer, user_id, base_url)
+        else
+          raise e # Re-raise if it's another issue
+        end
       end
-
-      credentials
     end
+
+    credentials
   end
 
   def authorize
