@@ -21,52 +21,34 @@ class GoogleSheetsApi
     authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
   end
 
-  # def get_credentials(authorizer:, user_id:)
-  #   base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
-  #   credentials = authorizer.get_credentials(user_id)
-  #
-  #   # TODO: Use a callback to monitor the number OauthSession records
-  #   if credentials.nil?
-  #     url = authorizer.get_authorization_url(base_url:)
-  #     puts "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}"
-  #     puts 'Have you authorised the application?'
-  #     puts '1. Yes'
-  #     puts '0. No'
-  #     response = gets.strip.to_i
-  #     code = OauthSession.last.code if response == 1
-  #     authorizer.get_and_store_credentials_from_code(user_id:, code:, base_url:)
-  #   else
-  #     credentials
-  #   end
-  # end
+  def get_credentials(authorizer:, user_id:)
+    base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
+    credentials = authorizer.get_credentials(user_id)
 
-def get_credentials(authorizer:, user_id:)
-  base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
-  credentials = authorizer.get_credentials(user_id)
+    if credentials.nil?
+      # Token is missing, request authorization
+      request_new_authorization(authorizer, user_id, base_url)
 
-  if credentials.nil?
-    # Token is missing, request authorization
-    request_new_authorization(authorizer, user_id, base_url)
+    else
+      Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
 
-  else
-    Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
+      # Ensure token refresh if it's expired
+      if credentials.expired?
+        Rails.logger.info 'Access token expired, attempting to refresh token...'
+        begin
+          credentials.refresh!
+        rescue Signet::AuthorizationError => e
+          raise e unless e.message.include?('invalid_grant')
 
-    # Ensure token refresh if it's expired
-    if credentials.expired?
-      Rails.logger.info 'Access token expired, attempting to refresh token...'
-      begin
-        credentials.refresh!
-      rescue Signet::AuthorizationError => e
-        if e.message.include?('invalid_grant')
           Rails.logger.error 'Refresh token is invalid or revoked. Reauthorizing...'
           request_new_authorization(authorizer, user_id, base_url)
-        else
-          raise e # Re-raise if it's another issue
+
+          # Re-raise if it's another issue
         end
       end
-    end
 
-    credentials
+      credentials
+    end
   end
 
   def authorize
@@ -143,3 +125,22 @@ def get_credentials(authorizer:, user_id:)
     update_values(spreadsheet_id:, range:, csv_path:)
   end
 end
+
+# def get_credentials(authorizer:, user_id:)
+#   base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
+#   credentials = authorizer.get_credentials(user_id)
+#
+#   # TODO: Use a callback to monitor the number OauthSession records
+#   if credentials.nil?
+#     url = authorizer.get_authorization_url(base_url:)
+#     puts "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}"
+#     puts 'Have you authorised the application?'
+#     puts '1. Yes'
+#     puts '0. No'
+#     response = gets.strip.to_i
+#     code = OauthSession.last.code if response == 1
+#     authorizer.get_and_store_credentials_from_code(user_id:, code:, base_url:)
+#   else
+#     credentials
+#   end
+# end
