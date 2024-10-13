@@ -28,6 +28,8 @@ services:
       - DISPLAY=${DISPLAY}
       - UID=1000
       - GID=1000
+      - BUY_IT_NOW_COUNTER=10
+      - BUY_IT_NOW_SLEEP=0.5
 
     ports:
       - "3000:3000"           # Expose port 3000 for the Rails app

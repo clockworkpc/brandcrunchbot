@@ -86,7 +86,7 @@ class BuyItNowBot < ApplicationJob
 
     domain_name = auction.domain
     bin_price = auction.bin_price
-    counter = 10
+    counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
     running = true
     while running
       counter -= 1
@@ -113,7 +113,7 @@ class BuyItNowBot < ApplicationJob
         Rails.logger.info(e)
       end
 
-      sleep 0.5
+      sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
 
     end
   end
