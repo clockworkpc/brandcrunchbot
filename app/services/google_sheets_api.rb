@@ -13,8 +13,14 @@ class GoogleSheetsApi
     url = authorizer.get_authorization_url(base_url:)
     Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
 
+    puts 'Have you authorised the application?'
+    puts '1. Yes'
+    puts '0. No'
+    response = gets.strip.to_i
+    # code = OauthSession.last.code if response == 1
+
     # Prompt user for authorization if needed
-    response = OauthSession.last
+    response = OauthSession.last if response == 1
     raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
 
     Rails.logger.info 'Authorization code found, exchanging for credentials...'
