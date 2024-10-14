@@ -8,65 +8,65 @@ class GoogleSheetsApi
     @service.authorization = authorize
   end
 
-  def request_new_authorization(authorizer, user_id, base_url)
-    # Token is missing or invalid, request authorization
-    url = authorizer.get_authorization_url(base_url:)
-    Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
+  # def request_new_authorization(authorizer, user_id, base_url)
+  #   # Token is missing or invalid, request authorization
+  #   url = authorizer.get_authorization_url(base_url:)
+  #   Rails.logger.info "Requesting new authorization. Open the following URL in the browser:\n#{url}"
+  #
+  #   puts 'Have you authorised the application?'
+  #   puts '1. Yes'
+  #   puts '0. No'
+  #   response = gets.strip.to_i
+  #   # code = OauthSession.last.code if response == 1
+  #
+  #   # Prompt user for authorization if needed
+  #   response = OauthSession.last if response == 1
+  #   raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
+  #
+  #   Rails.logger.info 'Authorization code found, exchanging for credentials...'
+  #   authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
+  # end
 
-    puts 'Have you authorised the application?'
-    puts '1. Yes'
-    puts '0. No'
-    response = gets.strip.to_i
-    # code = OauthSession.last.code if response == 1
-
-    # Prompt user for authorization if needed
-    response = OauthSession.last if response == 1
-    raise 'No valid authorization code found. Please reauthorize the app.' unless response&.code
-
-    Rails.logger.info 'Authorization code found, exchanging for credentials...'
-    authorizer.get_and_store_credentials_from_code(user_id:, code: response.code, base_url:)
-  end
-
-  def get_credentials(authorizer:, user_id:)
-    base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
-    credentials = authorizer.get_credentials(user_id)
-
-    if credentials.nil?
-      # Token is missing, request authorization
-      request_new_authorization(authorizer, user_id, base_url)
-
-    else
-      Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
-
-      # Ensure token refresh if it's expired
-      if credentials.expired?
-        Rails.logger.info 'Access token expired, attempting to refresh token...'
-        begin
-          credentials.refresh!
-        rescue Signet::AuthorizationError => e
-          raise e unless e.message.include?('invalid_grant')
-
-          Rails.logger.error 'Refresh token is invalid or revoked. Reauthorizing...'
-          request_new_authorization(authorizer, user_id, base_url)
-
-          # Re-raise if it's another issue
-        end
-      end
-
-      credentials
-    end
-  end
+  # def get_credentials(authorizer:, user_id:)
+  #   base_url = Rails.env.match?('production') ? REDIRECT_URI : LOOPBACK_ADDRESS
+  #   credentials = authorizer.get_credentials(user_id)
+  #
+  #   if credentials.nil?
+  #     # Token is missing, request authorization
+  #     request_new_authorization(authorizer, user_id, base_url)
+  #
+  #   else
+  #     Rails.logger.info "Credentials found for user #{user_id}. Checking expiration..."
+  #
+  #     # Ensure token refresh if it's expired
+  #     if credentials.expired?
+  #       Rails.logger.info 'Access token expired, attempting to refresh token...'
+  #       begin
+  #         credentials.refresh!
+  #       rescue Signet::AuthorizationError => e
+  #         raise e unless e.message.include?('invalid_grant')
+  #
+  #         Rails.logger.error 'Refresh token is invalid or revoked. Reauthorizing...'
+  #         request_new_authorization(authorizer, user_id, base_url)
+  #
+  #         # Re-raise if it's another issue
+  #       end
+  #     end
+  #
+  #     credentials
+  #   end
+  # end
 
   def authorize
-    # credentials_key = :google_client_secret
-    credentials_key = Rails.env.eql?('production') ? :google_client_secret_prod : :google_client_secret
-    credentials = Rails.application.credentials[credentials_key].deep_stringify_keys
-    client_id = Google::Auth::ClientId.from_hash(credentials)
-    token_store = Google::Auth::Stores::RedisTokenStore.new(redis: Redis.new)
-    # token_store = Google::Auth::Stores::FileTokenStore.new file: TOKEN_PATH_SHEETS
-    authorizer = Google::Auth::UserAuthorizer.new client_id, SCOPE, token_store
-    user_id = 'brandcrunch'
-    get_credentials(authorizer:, user_id:)
+    # Load the service account credentials from Rails credentials
+    creds = Rails.application.credentials.google_client_secret_server
+
+    authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
+      json_key_io: StringIO.new(creds.to_json),
+      scope: SCOPE
+    )
+    authorizer.fetch_access_token!
+    authorizer
   end
 
   def get_spreadsheet_values(spreadsheet_id:, range:)
