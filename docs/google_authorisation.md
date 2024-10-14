@@ -73,3 +73,6 @@ end
 For most cases involving server-to-server communication (like interacting with Google Sheets from a backend application), using a **Service Account** is the best solution because it avoids the need for manual user interaction. It’s secure and streamlined for automated processes. 
 
 If your application needs to act on behalf of specific users and cannot use service accounts, then browser-based OAuth flows are necessary, though they can be difficult to automate fully.
+
+bbs = BuyItNowBotScheduler.new
+bbs.call
