@@ -104,8 +104,10 @@ class BuyItNowBot < ApplicationJob
       job_enqueued = scheduled_job(auction)
       extant_job = job_enqueued&.run_at && job_enqueued.run_at > Time.now.utc
       result[:rescheduled] = true
-      Rails.logger.info("Job already scheduled for #{domain_name} at #{job_enqueued.run_at}".yellow)
-      return result if extant_job
+      if extant_job
+        Rails.logger.info("Job already scheduled for #{domain_name} at #{job_enqueued.run_at}".yellow)
+        return result
+      end
 
       Rails.logger.info "Scheduling a job for #{auction_end_time}"
       self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
