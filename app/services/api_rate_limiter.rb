@@ -6,7 +6,14 @@ class ApiRateLimiter
   TIME_WINDOW = 60 # in seconds
 
   def initialize
-    @redis = Redis.new
+    @redis = Redis.new(
+      url: ENV.fetch('REDIS_URL', nil),
+      ssl_params: {
+        cert: Rails.root.join('config/ssl/server.crt').read,
+        key: Rails.root.join('config/ssl/server.key').read,
+        verify_mode: OpenSSL::SSL::VERIFY_NONE # If you want to skip verification
+      }
+    )
   end
 
   # This method tracks API calls and ensures rate limiting

@@ -135,7 +135,7 @@ class BuyItNowBot < ApplicationJob
 
     auction_details = @gda.get_auction_details(domain_name:)
     datetime_str = auction_details['AuctionEndTime']
-    auction_end_time ||= Utils.convert_to_utc(datetime_str:)
+    auction_end_time = Utils.convert_to_utc(datetime_str:) if auction_end_time.nil?
 
     initial_check = check_auction(auction_details:)
     return if initial_check[:valid] == false
