@@ -97,13 +97,14 @@ class BuyItNowBot < ApplicationJob
       Rails.logger.info "Price #{price} is higher than BIN price #{bin_price}"
       datetime_str = auction_details['AuctionEndTime']
       auction_end_time = Utils.convert_to_utc(datetime_str:)
-      auction = Auction.find_by(domain_name: domain_name)
+      auction = Auction.find_by(domain_name:)
       auction.update!(auction_end_time:)
       # dt = Utils.convert_to_utc(datetime_str: auction_end_time)
 
       job_enqueued = scheduled_job(auction)
       extant_job = job_enqueued&.run_at && job_enqueued.run_at > Time.now.utc
       result[:rescheduled] = true
+      Rails.logger.info("Job already scheduled for #{domain_name} at #{job_enqueued.run_at}".yellow)
       return result if extant_job
 
       Rails.logger.info "Scheduling a job for #{auction_end_time}"
@@ -123,17 +124,21 @@ class BuyItNowBot < ApplicationJob
     'hello world'
   end
 
-  def perform(auction, auction_end_time, gda = nil)
+  def perform(auction, auction_end_time = nil, gda = nil)
+    api_rate_limiter = ApiRateLimiter.new
     @gda = gda || GodaddyApi.new
 
     domain_name = auction.domain_name
     bin_price = auction.bin_price
-    api_rate_limiter = ApiRateLimiter.new
+
     counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
 
     auction_details = @gda.get_auction_details(domain_name:)
-    inital_check = check_auction(auction_details:)
-    return if inital_check[:valid] == false
+    datetime_str = auction_details['AuctionEndTime']
+    auction_end_time ||= Utils.convert_to_utc(datetime_str:)
+
+    initial_check = check_auction(auction_details:)
+    return if initial_check[:valid] == false
 
     count_down_until(domain_name:, auction_end_time:, secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f)
 
@@ -143,19 +148,18 @@ class BuyItNowBot < ApplicationJob
       Rails.logger.info("Domain Name: #{domain_name}, Counter: #{counter}")
       break if counter.zero?
 
-        result = api_rate_limiter.limit_rate(
-          method(:purchase_or_ignore), domain_name:, bin_price:
-        )
+      result = api_rate_limiter.limit_rate(
+        method(:purchase_or_ignore), domain_name:, bin_price:
+      )
 
-        # Domain has been purchased (200 and some other conditions)
-        break if result[:success] == true
+      # Domain has been purchased (200 and some other conditions)
+      break if result[:success] == true
 
-        # Domain not available anymore
-        break if result[:valid] == false
+      # Domain not available anymore
+      break if result[:valid] == false
 
-        # Reschedule for future Auction
-        break if result[:rescheduled] == true
-
+      # Reschedule for future Auction
+      break if result[:rescheduled] == true
 
       # begin
       # # Domain has not been purchased because the price is too high
