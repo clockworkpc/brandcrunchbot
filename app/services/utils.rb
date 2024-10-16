@@ -260,13 +260,13 @@ class Utils # rubocop:disable Metrics/ClassLength
     auction_gid = job_data['arguments'].first['_aj_globalid']
 
     auction = GlobalID::Locator.locate(auction_gid)
-    auction.domain
+    auction.domain_name
   end
 
   def self.list_scheduled_jobs
     Delayed::Job.all.map do |job|
       {
-        domain: Utils.extract_domain_name_from_scheduled_job(job),
+        domain_name: Utils.extract_domain_name_from_scheduled_job(job),
         run_at: job.run_at
       }
     end
