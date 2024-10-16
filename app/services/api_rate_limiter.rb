@@ -8,11 +8,7 @@ class ApiRateLimiter
   def initialize
     @redis = Redis.new(
       url: ENV.fetch('REDIS_URL', nil),
-      ssl_params: {
-        cert: Rails.root.join('config/ssl/server.crt').read,
-        key: Rails.root.join('config/ssl/server.key').read,
-        verify_mode: OpenSSL::SSL::VERIFY_NONE # If you want to skip verification
-      }
+      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
     )
   end
 
