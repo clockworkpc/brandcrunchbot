@@ -96,7 +96,7 @@ class BuyItNowBotScheduler
   end
 
   def schedule_buy_it_now_bot(auction:, auction_end_time: nil)
-    auction_end_time ||= auction.auction_end_time
+    auction_end_time ||= Utils.convert_to_utc(datetime_str: auction.auction_end_time)
     Rails.logger.info(auction_end_time.class)
     Rails.logger.info(auction_end_time.to_s.green)
     Rails.logger.info((auction_end_time - 10).to_s.green)
@@ -119,7 +119,9 @@ class BuyItNowBotScheduler
     end
 
     Rails.logger.info("NO JOB EXISTS for #{auction.domain_name}".red)
-    schedule_buy_it_now_bot(auction: updated_auction)
+    datetime_str = updated_auction.auction_end_time
+    auction_end_time = Utils.convert_to_utc(datetime_str:)
+    schedule_buy_it_now_bot(auction: updated_auction, auction_end_time:)
   rescue StandardError => e
     Rails.logger.info(e)
   end
