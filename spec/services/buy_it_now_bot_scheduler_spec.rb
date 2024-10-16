@@ -61,8 +61,8 @@ RSpec.describe BuyItNowBotScheduler, type: :model do
 
   describe '#call' do
     it 'retrieves domains from Google Sheets and schedules BuyItNowBot' do
-      auction1 = Auction.create!(domain: 'example.com', proxy_bid: 100, bin_price: 500, active: true)
-      auction2 = Auction.create!(domain: 'testdomain.net', proxy_bid: 150, bin_price: 600, active: true)
+      auction1 = Auction.create!(domain_name: 'example.com', proxy_bid: 100, bin_price: 500, active: true)
+      auction2 = Auction.create!(domain_name: 'testdomain.net', proxy_bid: 150, bin_price: 600, active: true)
 
       expect(service).to receive(:get_spreadsheet_values)
         .with(sheet_id, 'domains!A1:C')

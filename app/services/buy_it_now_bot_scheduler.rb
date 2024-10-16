@@ -16,14 +16,14 @@ class BuyItNowBotScheduler
     return if values.blank?
 
     values.each do |ary|
-      domain = ary[0]
+      domain_name = ary[0]
       proxy_bid = ary[1].to_i
       bin_price = ary[2].to_i
 
-      auction = if Auction.exists?(domain:)
-                  Auction.find_by(domain:)
+      auction = if Auction.exists?(domain_name:)
+                  Auction.find_by(domain_name:)
                 else
-                  Auction.create(domain:, proxy_bid:, bin_price:)
+                  Auction.create(domain_name:, proxy_bid:, bin_price:)
                 end
       auction.update(proxy_bid:, bin_price:)
     end
@@ -31,10 +31,10 @@ class BuyItNowBotScheduler
 
   def deactivate_passe_auctions(values:)
     domains_in_spreadsheet = values.map(&:first)
-    domains_in_database = Auction.all.map(&:domain)
+    domains_in_database = Auction.all.map(&:domain_name)
     redundant_domains = domains_in_database - domains_in_spreadsheet
-    redundant_domains.each do |domain|
-      auction = Auction.find_by(domain:)
+    redundant_domains.each do |domain_name|
+      auction = Auction.find_by(domain_name:)
       auction.update!(active: false)
     end
   end
@@ -78,7 +78,7 @@ class BuyItNowBotScheduler
 
   def fetch_auction_details(auction:)
     Rails.logger.info("auction: #{auction}")
-    domain_name = auction[:domain]
+    domain_name = auction[:domain_name]
     res = @gda.get_auction_details(domain_name:)
     Rails.logger.info("res: #{res}")
     is_valid = res['IsValid'].downcase == 'true'
@@ -92,7 +92,7 @@ class BuyItNowBotScheduler
       auction.update!(is_valid:)
     end
 
-    Auction.find_by(domain: domain_name)
+    Auction.find_by(domain_name:)
   end
 
   def schedule_buy_it_now_bot(auction:, auction_end_time: nil)
@@ -110,15 +110,15 @@ class BuyItNowBotScheduler
     return unless updated_auction.is_valid
 
     Rails.logger.info("updated_auction: #{updated_auction}")
-    delayed_job = Delayed::Job.where('handler LIKE ?', "%#{auction.domain}%").first
+    delayed_job = Delayed::Job.where('handler LIKE ?', "%#{auction.domain_name}%").first
 
     if delayed_job
-      text = "JOB EXISTS for #{auction.domain} at #{delayed_job.run_at}"
+      text = "JOB EXISTS for #{auction.domain_name} at #{delayed_job.run_at}"
       Rails.logger.info(text.red)
       return
     end
 
-    Rails.logger.info("NO JOB EXISTS for #{auction.domain}".red)
+    Rails.logger.info("NO JOB EXISTS for #{auction.domain_name}".red)
     schedule_buy_it_now_bot(auction: updated_auction)
   rescue StandardError => e
     Rails.logger.info(e)

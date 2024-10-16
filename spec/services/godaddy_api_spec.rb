@@ -89,8 +89,6 @@ RSpec.describe GodaddyApi do
 
       details = @service.get_auction_details(domain_name:)
 
-      require 'pry'; binding.pry
-
       res = @service.place_bid_or_purchase(domain_name:, s_bid_amount:)
       pp res
     end
