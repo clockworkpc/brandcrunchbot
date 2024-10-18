@@ -264,12 +264,13 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.list_scheduled_jobs
-    Delayed::Job.all.map do |job|
+    jobs = Delayed::Job.all.map do |job|
       {
         domain_name: Utils.extract_domain_name_from_scheduled_job(job),
         run_at: job.run_at
       }
     end
+    jobs.sort_by { |x| x[:run_at] }
   end
 
   def self.convert_to_utc(datetime_str:)
