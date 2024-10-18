@@ -30,6 +30,7 @@ class BuyItNowBotScheduler
   end
 
   def deactivate_passe_auctions(values:)
+    # TODO: Delete delayed job associated with this auction
     domains_in_spreadsheet = values.map(&:first)
     domains_in_database = Auction.all.map(&:domain_name)
     redundant_domains = domains_in_database - domains_in_spreadsheet
@@ -135,6 +136,7 @@ class BuyItNowBotScheduler
     deactivate_passe_auctions(values:)
     active_auctions = Auction.where(active: true)
     Rails.logger.info(Delayed::Job.all)
+    Delayed::Job.delete_all
     active_auctions.each do |auction|
       schedule_job(auction:)
       sleep 0.25

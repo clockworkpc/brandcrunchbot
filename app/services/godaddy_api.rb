@@ -176,7 +176,7 @@ class GodaddyApi
     cdpr = estimate_closeout_domain_price(domain_name:)
     closeout_domain_price_key = cdpr[:closeout_domain_price_key]
     Rails.logger.info("CDPR Key: #{closeout_domain_price_key}")
-    return result if closeout_domain_price_key.nil?
+    return result unless closeout_domain_price_key
 
     instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
   end
