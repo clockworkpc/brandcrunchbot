@@ -135,6 +135,7 @@ class BuyItNowBot < ApplicationJob
     return if initial_check[:valid] == false
 
     count_down_until(domain_name:, auction_end_time:, secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f)
+    skip_validation = true
 
     running = true
     while running
@@ -143,7 +144,7 @@ class BuyItNowBot < ApplicationJob
       break if counter.zero?
 
       result = api_rate_limiter.limit_rate(
-        method(:purchase_or_ignore), domain_name:, bin_price:
+        method(:purchase_or_ignore), domain_name:, bin_price:, skip_validation:
       )
 
       # Domain has been purchased (200 and some other conditions)
