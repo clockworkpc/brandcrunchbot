@@ -60,6 +60,7 @@ class BuyItNowBot < ApplicationJob
       Rails.logger.info("Skipping validation of Auction, attempting instant purchase for #{domain_name}")
       result = { valid: true, rescheduled: false, success: false }
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
+      Rails.logger.info("Closeout Key: #{closeout_domain_price_key}")
       response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
       hsh = parse_instant_purchase_response(response)
