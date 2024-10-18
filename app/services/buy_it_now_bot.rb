@@ -1,7 +1,15 @@
 class BuyItNowBot < ApplicationJob
   queue_as :default
 
+  attr_reader :gda
+
+  def gda
+    @gda ||= GodaddyApi.new
+  end
+
   def parse_instant_purchase_response(response)
+    return { 'Result' => 'Failure' } if response.is_a?(Hash) && response[:ok] == false
+
     doc = Nokogiri::XML(response.body)
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
@@ -19,21 +27,9 @@ class BuyItNowBot < ApplicationJob
     # Fetch all jobs related to the BuyItNowBot class
     delayed_jobs = Delayed::Job.where('handler LIKE ?', '%BuyItNowBot%')
 
-    # Check if any job has the auction with id 142 as an argument
+    # Check if any job matches the `auction_gid`
     delayed_jobs.detect do |job|
       job_wrapper = YAML.unsafe_load(job.handler)
-      # job_wrapper = YAML.safe_load(job.handler,
-      #                              permitted_classes: [
-      #                                ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper,
-      #                                Delayed::PerformableMethod,
-      #                                GlobalID::Locator,
-      #                                GlobalID::Identification,
-      #                                BuyItNowBot,
-      #                                GodaddyApi,
-      #                                Symbol,
-      #                                Auction,
-      #                                ActiveModel::Attribute
-      #                              ])
       job_data = job_wrapper.job_data
       auction_gid = job_data['arguments'].first['_aj_globalid']
       auction_obj = GlobalID::Locator.locate(auction_gid)
@@ -59,29 +55,11 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
-  def purchase_or_ignore(domain_name:, bin_price:)
-    auction_details = @gda.get_auction_details(domain_name:)
-    result = check_auction(auction_details:)
-    return result unless result[:valid] == true
+  def purchase_or_ignore(domain_name:, bin_price:, skip_validation: false)
+    if skip_validation
+      result = { valid: true, rescheduled: false, success: false }
+      response = gda.purchase_instantly(domain_name:)
 
-    # auction_details = @gda.get_auction_details(domain_name:)
-    # Rails.logger.info(auction_details)
-    # if auction_details['IsValid'] == 'False'
-    #   result[:valid] = false
-    #   return result
-    # end
-    #
-    # Rails.logger.info("auction_details: #{auction_details}")
-    # if auction_details['Price'].nil?
-    #   result[:valid] = false
-    #   return result
-    # end
-
-    price = auction_details['Price'].sub('$', '').to_i
-
-    if price <= bin_price
-      Rails.logger.info "I will buy this domain at #{price}"
-      response = @gda.purchase_instantly(domain_name:)
       hsh = parse_instant_purchase_response(response)
       if hsh['Result'] == 'Success'
         Rails.logger.info("Successful purchase of #{domain_name}".green)
@@ -90,28 +68,45 @@ class BuyItNowBot < ApplicationJob
         Rails.logger.info('No purchase made'.red)
         result[:valid] = false
       end
-
-      result
-
     else
-      Rails.logger.info "Price #{price} is higher than BIN price #{bin_price}"
-      datetime_str = auction_details['AuctionEndTime']
-      auction_end_time = Utils.convert_to_utc(datetime_str:)
-      auction = Auction.find_by(domain_name:)
-      auction.update!(auction_end_time:)
-      # dt = Utils.convert_to_utc(datetime_str: auction_end_time)
+      auction_details = gda.get_auction_details(domain_name:)
+      result = check_auction(auction_details:)
+      return result unless result[:valid] == true
 
-      job_enqueued = scheduled_job(auction)
-      extant_job = job_enqueued&.run_at && job_enqueued.run_at > Time.now.utc
-      result[:rescheduled] = true
-      if extant_job
-        Rails.logger.info("Job already scheduled for #{domain_name} at #{job_enqueued.run_at}".yellow)
-        return result
+      price = auction_details['Price'].sub('$', '').to_i
+
+      if price <= bin_price
+        Rails.logger.info "I will buy this domain at #{price}"
+        response = gda.purchase_instantly(domain_name:)
+        hsh = parse_instant_purchase_response(response)
+        if hsh['Result'] == 'Success'
+          Rails.logger.info("Successful purchase of #{domain_name}".green)
+          result[:success] = true
+        else
+          Rails.logger.info('No purchase made'.red)
+          result[:valid] = false
+        end
+
+      else
+        Rails.logger.info "Price #{price} is higher than BIN price #{bin_price}"
+        datetime_str = auction_details['AuctionEndTime']
+        auction_end_time = Utils.convert_to_utc(datetime_str:)
+        auction = Auction.find_by(domain_name:)
+        auction.update!(auction_end_time:)
+        # dt = Utils.convert_to_utc(datetime_str: auction_end_time)
+
+        job_enqueued = scheduled_job(auction)
+        extant_job = job_enqueued&.run_at && job_enqueued.run_at > Time.now.utc
+        result[:rescheduled] = true
+        if extant_job
+          Rails.logger.info("Job already scheduled for #{domain_name} at #{job_enqueued.run_at}".yellow)
+          return result
+        end
+
+        Rails.logger.info "Scheduling a job for #{auction_end_time}"
+        self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
+        Rails.logger.info "Will try again at #{auction_end_time}".yellow
       end
-
-      Rails.logger.info "Scheduling a job for #{auction_end_time}"
-      self.class.set(wait_until: auction_end_time - 5.seconds).perform_later(auction)
-      Rails.logger.info "Will try again at #{auction_end_time}".yellow
     end
     result
   end
@@ -123,19 +118,16 @@ class BuyItNowBot < ApplicationJob
       sleep_time = [remaining_time, secs_f].min
       sleep(sleep_time)
     end
-    'hello world'
   end
 
-  def perform(auction, auction_end_time = nil, gda = nil)
+  def perform(auction, auction_end_time = nil)
     api_rate_limiter = ApiRateLimiter.new
-    @gda = gda || GodaddyApi.new
-
     domain_name = auction.domain_name
     bin_price = auction.bin_price
 
     counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
 
-    auction_details = @gda.get_auction_details(domain_name:)
+    auction_details = gda.get_auction_details(domain_name:)
     datetime_str = auction_details['AuctionEndTime']
     auction_end_time = Utils.convert_to_utc(datetime_str:) if auction_end_time.nil?
 
@@ -162,13 +154,6 @@ class BuyItNowBot < ApplicationJob
 
       # Reschedule for future Auction
       break if result[:rescheduled] == true
-
-      # begin
-      # # Domain has not been purchased because the price is too high
-      # # Continue trying until the counter gets to 0
-      # rescue StandardError => e
-      #   Rails.logger.info(e)
-      # end
 
       sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
 
