@@ -64,14 +64,18 @@ class BuyItNowBot < ApplicationJob
       Rails.logger.info("Closeout Key: #{closeout_domain_price_key}")
       response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
-      hsh = parse_instant_purchase_response(response)
-      if hsh['Result'] == 'Success'
-        Rails.logger.info("Successful purchase of #{domain_name}".green)
-        result[:success] = true
-      else
-        Rails.logger.info('No purchase made'.red)
-        result[:valid] = false
-      end
+      Rails.logger.info(response)
+      result[:valid] = false
+      return response
+
+      # hsh = parse_instant_purchase_response(response)
+      # if hsh['Result'] == 'Success'
+      #   Rails.logger.info("Successful purchase of #{domain_name}".green)
+      #   result[:success] = true
+      # else
+      #   Rails.logger.info('No purchase made'.red)
+      #   result[:valid] = false
+      # end
     else
       auction_details = gda.get_auction_details(domain_name:)
       result = check_auction(auction_details:)
