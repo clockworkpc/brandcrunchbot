@@ -57,6 +57,7 @@ class BuyItNowBot < ApplicationJob
 
   def purchase_or_ignore(domain_name:, bin_price:, skip_validation: false)
     if skip_validation
+      Rails.logger.info("Skipping validation of Auction, attempting instant purchase for #{domain_name}")
       result = { valid: true, rescheduled: false, success: false }
       response = gda.purchase_instantly(domain_name:)
 
