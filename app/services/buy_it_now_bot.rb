@@ -11,6 +11,7 @@ class BuyItNowBot < ApplicationJob
     return { 'Result' => 'Failure' } if response.is_a?(Hash) && response[:ok] == false
 
     doc = Nokogiri::XML(response.body)
+    Rails.logger.info(response.body)
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
