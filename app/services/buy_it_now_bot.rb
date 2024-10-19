@@ -65,6 +65,7 @@ class BuyItNowBot < ApplicationJob
       response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
       Rails.logger.info(response)
+      Rails.logger.info(response.body)
       result[:valid] = false
       return response
 
