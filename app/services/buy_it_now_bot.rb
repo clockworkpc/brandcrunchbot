@@ -56,6 +56,28 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
+  def purchase_outright(domain_name:, attempts: 5)
+    result = { valid: true, rescheduled: false, success: false }
+    attempts.times do
+      cdpr = gda.estimate_closeout_domain_price(domain_name:)
+      Rails.logger.info(cdpr)
+      next if cdpr[:result] == 'Failure'
+
+      closeout_domain_price_key = cdpr[:closeout_domain_price_key]
+      Rails.logger.info("Close Out Key: #{closeout_domain_price_key}")
+
+      response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+      Rails.logger.info(response)
+      Rails.logger.info(response.body)
+
+      if response&.status == 200
+        result[:success] = true
+        return result
+    end
+    result[:valid] = false
+    result
+  end
+
   def purchase_or_ignore(domain_name:, bin_price:, skip_validation: false, cdpr: nil)
     if skip_validation
       Rails.logger.info("Skipping validation of Auction, attempting instant purchase for #{domain_name}")
@@ -78,9 +100,9 @@ class BuyItNowBot < ApplicationJob
       #   result[:valid] = false
       # end
     else
-      auction_details = gda.get_auction_details(domain_name:)
-      result = check_auction(auction_details:)
-      return result unless result[:valid] == true
+      # auction_details = gda.get_auction_details(domain_name:)
+      # result = check_auction(auction_details:)
+      # return result unless result[:valid] == true
 
       price = auction_details['Price'].sub('$', '').to_i
 
@@ -133,7 +155,6 @@ class BuyItNowBot < ApplicationJob
     api_rate_limiter = ApiRateLimiter.new
     domain_name = auction.domain_name
     bin_price = auction.bin_price
-
     counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
 
     auction_details = gda.get_auction_details(domain_name:)
@@ -145,17 +166,10 @@ class BuyItNowBot < ApplicationJob
     return if initial_check[:valid] == false
 
     Rails.logger.info("Auction validated for #{domain_name}")
-    cdpr = gda.estimate_closeout_domain_price(domain_name:)
-
-    Rails.logger.info(cdpr)
-    closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-    Rails.logger.info("Close Out Key: #{closeout_domain_price_key}")
 
     return unless closeout_domain_price_key
 
     count_down_until(domain_name:, auction_end_time:, secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f)
-
-    skip_validation = true
 
     running = true
     while running
@@ -164,11 +178,9 @@ class BuyItNowBot < ApplicationJob
       break if counter.zero?
 
       result = api_rate_limiter.limit_rate(
-        method(:purchase_or_ignore),
+        method(:purchase_outright),
         domain_name:,
-        bin_price:,
-        skip_validation:,
-        cdpr:
+        bin_price:
       )
 
       # Domain has been purchased (200 and some other conditions)
@@ -181,7 +193,6 @@ class BuyItNowBot < ApplicationJob
       break if result[:rescheduled] == true
 
       sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
-
     end
   end
 end
