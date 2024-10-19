@@ -132,11 +132,11 @@ class BuyItNowBotScheduler
     response = retrieve_domains_from_google_sheet(range:)
     values = response.values
     Rails.logger.info("values: #{values}")
+    Delayed::Job.delete_all
     update_active_auctions(values:)
     deactivate_passe_auctions(values:)
     active_auctions = Auction.where(active: true)
-    Rails.logger.info(Delayed::Job.all)
-    Delayed::Job.delete_all
+    # Rails.logger.info(Delayed::Job.all)
     active_auctions.each do |auction|
       schedule_job(auction:)
       sleep 0.25
