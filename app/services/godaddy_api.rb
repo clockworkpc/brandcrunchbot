@@ -28,6 +28,8 @@ class GodaddyApi
   def parse_estimate_closeout_domain_price(response)
     doc = Nokogiri::XML(response.body)
 
+    Rails.logger.info(response.body)
+
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
