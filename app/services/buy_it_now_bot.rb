@@ -107,29 +107,29 @@ class BuyItNowBot < ApplicationJob
 
     count_down_until(domain_name:, auction_end_time:, secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f)
 
-    running = true
-    while running
-      counter -= 1
-      Rails.logger.info("Domain Name: #{domain_name}, Counter: #{counter}")
-      break if counter.zero?
+    # running = true
+    # while running
+    # counter -= 1
+    # Rails.logger.info("Domain Name: #{domain_name}, Counter: #{counter}")
+    # break if counter.zero?
 
-      result = api_rate_limiter.limit_rate(
-        method(:purchase_outright),
-        domain_name:,
-        attempts:
-      )
+    result = api_rate_limiter.limit_rate(
+      method(:purchase_outright),
+      domain_name:,
+      attempts:
+    )
 
-      # Domain has been purchased (200 and some other conditions)
-      break if result[:success] == true
+    # Domain has been purchased (200 and some other conditions)
+    # break if result[:success] == true
 
-      # Domain not available anymore
-      break if result[:valid] == false
+    # Domain not available anymore
+    # break if result[:valid] == false
 
-      # Reschedule for future Auction
-      break if result[:rescheduled] == true
+    # Reschedule for future Auction
+    # break if result[:rescheduled] == true
 
-      sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
-    end
+    # sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
+    # end
   end
 end
 
