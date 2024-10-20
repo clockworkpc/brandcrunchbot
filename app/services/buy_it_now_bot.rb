@@ -59,6 +59,8 @@ class BuyItNowBot < ApplicationJob
     attempts.times do
       cdpr = gda.estimate_closeout_domain_price(domain_name:)
       Rails.logger.info(cdpr)
+      next unless cdpr.is_a?(Hash)
+
       next if cdpr[:result] == 'Failure'
 
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
@@ -80,57 +82,85 @@ class BuyItNowBot < ApplicationJob
   def count_down_until(domain_name:, auction_end_time:, secs_f:)
     while Time.now.utc < auction_end_time.utc
       remaining_time = auction_end_time - Time.now.utc
-      Rails.logger.info("Time remaining in auction for #{domain_name}: #{'%.6f' % remaining_time} seconds".yellow)
+      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds" # rubocop:disable Metrics/LineLength
+      Rails.logger.info(text.yellow)
       sleep_time = [remaining_time, secs_f].min
       sleep(sleep_time)
     end
   end
 
   def perform(auction, auction_end_time = nil)
-    api_rate_limiter = ApiRateLimiter.new
     domain_name = auction.domain_name
-    # bin_price = auction.bin_price
-    counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
-    attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
 
+    # Check whether still a valid Auction
     auction_details = gda.get_auction_details(domain_name:)
     datetime_str = auction_details['AuctionEndTime']
     auction_end_time = Utils.convert_to_utc(datetime_str:) if auction_end_time.nil?
-
     Rails.logger.info("Validating auction for #{domain_name}")
     initial_check = check_auction(auction_details:)
     return if initial_check[:valid] == false
 
     Rails.logger.info("Auction validated for #{domain_name}")
 
-    return unless closeout_domain_price_key
-
-    count_down_until(domain_name:, auction_end_time:, secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f)
-
-    # running = true
-    # while running
-    # counter -= 1
-    # Rails.logger.info("Domain Name: #{domain_name}, Counter: #{counter}")
-    # break if counter.zero?
-
-    result = api_rate_limiter.limit_rate(
-      method(:purchase_outright),
+    # Count down until 0.25 seconds after the Auction ends
+    count_down_until(
       domain_name:,
-      attempts:
+      auction_end_time: auction_end_time + 0.25,
+      secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f
     )
 
-    # Domain has been purchased (200 and some other conditions)
-    # break if result[:success] == true
-
-    # Domain not available anymore
-    # break if result[:valid] == false
-
-    # Reschedule for future Auction
-    # break if result[:rescheduled] == true
-
-    # sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
-    # end
+    # Make up to 5 rapid attempts to purchase
+    attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
+    purchase_outright(domain_name:, attempts:)
   end
+
+  # def perform(auction, auction_end_time = nil)
+  #   api_rate_limiter = ApiRateLimiter.new
+  #   domain_name = auction.domain_name
+  #   # bin_price = auction.bin_price
+  #   # counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
+  #   attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
+  #
+  #   auction_details = gda.get_auction_details(domain_name:)
+  #   datetime_str = auction_details['AuctionEndTime']
+  #   auction_end_time = Utils.convert_to_utc(datetime_str:) if auction_end_time.nil?
+  #
+  #   Rails.logger.info("Validating auction for #{domain_name}")
+  #   initial_check = check_auction(auction_details:)
+  #   return if initial_check[:valid] == false
+
+  # Rails.logger.info("Auction validated for #{domain_name}")
+  #
+  # count_down_until(
+  #   domain_name:,
+  #   auction_end_time: auction_end_time + 0.25,
+  #   secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f
+  # )
+
+  # running = true
+  # while running
+  # counter -= 1
+  # Rails.logger.info("Domain Name: #{domain_name}, Counter: #{counter}")
+  # break if counter.zero?
+
+  # result = api_rate_limiter.limit_rate(
+  #   method(:purchase_outright),
+  #   domain_name:,
+  #   attempts:
+  # )
+
+  # Domain has been purchased (200 and some other conditions)
+  # break if result[:success] == true
+
+  # Domain not available anymore
+  # break if result[:valid] == false
+
+  # Reschedule for future Auction
+  # break if result[:rescheduled] == true
+
+  # sleep ENV.fetch('BUY_IT_NOW_SLEEP', 0.5).to_f
+  # end
+  #   end
 end
 
 # def purchase_or_ignore(domain_name:, bin_price:, skip_validation: false, cdpr: nil)
