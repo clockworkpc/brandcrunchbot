@@ -39,13 +39,11 @@ class BuyItNowBot < ApplicationJob
   def check_auction(auction_details:)
     result = { valid: true, rescheduled: false, success: false }
 
-    Rails.logger.info(auction_details)
     if auction_details['IsValid'] == 'False'
       result[:valid] = false
       return result
     end
 
-    Rails.logger.info("auction_details: #{auction_details}")
     if auction_details['Price'].nil?
       result[:valid] = false
       return result
@@ -113,6 +111,8 @@ class BuyItNowBot < ApplicationJob
     # Make up to 5 rapid attempts to purchase
     attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
     purchase_outright(domain_name:, attempts:)
+
+    gda.get_auction_details(domain_name:)
   end
 
   # def perform(auction, auction_end_time = nil)
