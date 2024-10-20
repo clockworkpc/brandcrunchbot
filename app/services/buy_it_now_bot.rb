@@ -112,7 +112,12 @@ class BuyItNowBot < ApplicationJob
     attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
     purchase_outright(domain_name:, attempts:)
 
-    gda.get_auction_details(domain_name:)
+    sleep 1
+    second_auction_details = gda.get_auction_details(domain_name:)
+    second_check = check_auction(auction_details: second_auction_details)
+    return unless second_check[:valid]
+
+    purchase_outright(domain_name:, attempts: 2)
   end
 
   # def perform(auction, auction_end_time = nil)
