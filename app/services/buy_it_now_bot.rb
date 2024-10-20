@@ -113,6 +113,7 @@ class BuyItNowBot < ApplicationJob
     purchase_outright(domain_name:, attempts:)
 
     sleep 1
+    Rails.logger.info("Follow up check for #{domain_name}")
     second_auction_details = gda.get_auction_details(domain_name:)
     second_check = check_auction(auction_details: second_auction_details)
     return unless second_check[:valid]

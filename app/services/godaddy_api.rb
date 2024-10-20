@@ -180,6 +180,8 @@ class GodaddyApi
     Rails.logger.info("CDPR Key: #{closeout_domain_price_key}")
     return result unless closeout_domain_price_key
 
-    instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+    result = instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+    Rails.logger.info(result.body)
+    result
   end
 end
