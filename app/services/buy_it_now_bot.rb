@@ -89,7 +89,7 @@ class BuyItNowBot < ApplicationJob
   def perform(auction, auction_end_time = nil)
     api_rate_limiter = ApiRateLimiter.new
     domain_name = auction.domain_name
-    bin_price = auction.bin_price
+    # bin_price = auction.bin_price
     counter = ENV.fetch('BUY_IT_NOW_COUNTER', 10).to_i
     attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
 

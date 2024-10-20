@@ -7,25 +7,25 @@ class BuyItNowBotScheduler
     @bb = BuyItNowBot.new(gda: @gda)
   end
 
-  def retrieve_domains_from_google_sheet(range: 'domains!A1:C')
-    spreadsheet_id = Rails.application.credentials[:spreadsheet_id]
-    @gsa.get_spreadsheet_values(spreadsheet_id:, range:)
-  end
+  # def retrieve_domains_from_google_sheet(changes:)
+  #   spreadsheet_id = Rails.application.credentials[:spreadsheet_id]
+  #   @gsa.get_spreadsheet_values(spreadsheet_id:, range:)
+  # end
 
-  def update_active_auctions(values:)
-    return if values.blank?
+  def update_active_auctions(changes:)
+    return if changes.blank?
 
-    values.each do |ary|
-      domain_name = ary[0]
-      proxy_bid = ary[1].to_i
-      bin_price = ary[2].to_i
+    changes.each do |hsh|
+      Rails.logger.info(hsh)
+      domain_name = hsh['domain_name']
+      bin_price = hsh['bin_price']
 
       auction = if Auction.exists?(domain_name:)
                   Auction.find_by(domain_name:)
                 else
-                  Auction.create(domain_name:, proxy_bid:, bin_price:)
+                  Auction.create(domain_name:, bin_price:)
                 end
-      auction.update(proxy_bid:, bin_price:)
+      auction.update(bin_price:, active: true)
     end
   end
 
@@ -128,15 +128,13 @@ class BuyItNowBotScheduler
     Rails.logger.info(e)
   end
 
-  def call(range: 'domains!A1:C')
-    response = retrieve_domains_from_google_sheet(range:)
-    values = response.values
-    Rails.logger.info("values: #{values}")
+  def call(changes:)
     Delayed::Job.delete_all
-    update_active_auctions(values:)
-    deactivate_passe_auctions(values:)
+    Auction.where(active: true).find_each do |auction|
+      auction.update!(active: false)
+    end
+    update_active_auctions(changes:)
     active_auctions = Auction.where(active: true)
-    # Rails.logger.info(Delayed::Job.all)
     active_auctions.each do |auction|
       schedule_job(auction:)
       sleep 0.25
