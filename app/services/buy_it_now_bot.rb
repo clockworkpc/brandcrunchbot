@@ -101,11 +101,12 @@ class BuyItNowBot < ApplicationJob
     return if initial_check[:valid] == false
 
     Rails.logger.info("Auction validated for #{domain_name}")
+    countdown_delay = ENV.fetch('BUY_IT_NOW_BOT_DELAY', 0.4).to_f
 
     # Count down until 0.25 seconds after the Auction ends
     count_down_until(
       domain_name:,
-      auction_end_time: auction_end_time + 0.25,
+      auction_end_time: auction_end_time + countdown_delay,
       secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f
     )
 
