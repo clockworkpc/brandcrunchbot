@@ -22,7 +22,9 @@ class GodaddyApi
     kwargs = { domain_name: }
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
     response = https.request(request)
-    parse_auction_details(response)
+    auction_details = parse_auction_details(response)
+    Rails.logger.info(auction_details)
+    auction_details
   end
 
   def parse_estimate_closeout_domain_price(response)
