@@ -43,7 +43,7 @@ class GodaddyApi
     xml_fragment = response_node.first.children.first.text
     parsed_fragment = Nokogiri::XML(xml_fragment)
 
-    {
+    result = {
       result: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Result'],
       domain: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Domain'],
       price: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Price'],
@@ -54,6 +54,9 @@ class GodaddyApi
       total: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Total'],
       closeout_domain_price_key: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['closeoutDomainPriceKey']
     }
+
+    Rails.logger.info("Closeout Key: #{result[:closeout_domain_price_key]}")
+    result
   end
 
   def estimate_closeout_domain_price(domain_name:)
@@ -64,6 +67,7 @@ class GodaddyApi
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
     response = https.request(request)
     Rails.logger.info("#{domain_name}: #{response.code}")
+    Rails.logger.info(response.body)
     return unless response.code.to_i == 200
 
     parse_estimate_closeout_domain_price(response)
@@ -159,6 +163,29 @@ class GodaddyApi
     parse_auction_list(response)
   end
 
+  def parse_instant_purchase_closeout_domain(response:)
+    doc = Nokogiri::XML(response.body)
+    result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult').content
+    decoded_result = Nokogiri::HTML.fragment(result).to_s
+    decoded_doc = Nokogiri::XML(decoded_result)
+
+    result = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Result').value
+    domain = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Domain').value
+    price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Price').value
+    renewal_price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@RenewalPrice').value
+    total = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Total').value
+    order_id = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@OrderID').value
+
+    {
+      result:,
+      domain:,
+      price:,
+      renewal_price:,
+      total:,
+      order_id:
+    }
+  end
+
   def instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
     soap_action_name = 'InstantPurchaseCloseoutDomain'
     basename = 'instant_purchase_closeout_domain'
@@ -171,7 +198,9 @@ class GodaddyApi
     }
 
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
-    https.request(request)
+    response = https.request(request)
+    Rails.logger.info(response.body)
+    parse_instant_purchase_closeout_domain(response:)
   end
 
   def purchase_instantly(domain_name:)
