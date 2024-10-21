@@ -54,7 +54,14 @@ class BuyItNowBot < ApplicationJob
 
   def purchase_outright(domain_name:, attempts: 5)
     result = { valid: true, rescheduled: false, success: false }
-    attempts.times do
+    (0..attempts).to_a.each do |i|
+      sleep 0.25
+      Rails.logger.info("Attempt ##{i + 1}")
+
+      auction_details = gda.get_auction_details(domain_name:)
+      initial_check = check_auction(auction_details:)
+      next if initial_check[:valid] == false
+
       cdpr = gda.estimate_closeout_domain_price(domain_name:)
       Rails.logger.info(cdpr)
       next unless cdpr.is_a?(Hash)
@@ -110,7 +117,9 @@ class BuyItNowBot < ApplicationJob
 
     # Make up to 5 rapid attempts to purchase
     attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
-    purchase_outright(domain_name:, attempts:)
+    result = purchase_outright(domain_name:, attempts:)
+
+    return if result[:success]
 
     sleep 1
     Rails.logger.info("Follow up check for #{domain_name}")
