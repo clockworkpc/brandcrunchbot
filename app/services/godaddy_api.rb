@@ -164,26 +164,30 @@ class GodaddyApi
   end
 
   def parse_instant_purchase_closeout_domain(response:)
+    Rails.logger.info(response.body)
     doc = Nokogiri::XML(response.body)
-    result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult').content
-    decoded_result = Nokogiri::HTML.fragment(result).to_s
-    decoded_doc = Nokogiri::XML(decoded_result)
-
-    result = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Result').value
-    domain = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Domain').value
-    price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Price').value
-    renewal_price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@RenewalPrice').value
-    total = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Total').value
-    order_id = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@OrderID').value
-
-    {
-      result:,
-      domain:,
-      price:,
-      renewal_price:,
-      total:,
-      order_id:
-    }
+    Rails.logger.info(doc)
+    result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult')
+    Rails.logger.info(result)
+    # result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult').content
+    # decoded_result = Nokogiri::HTML.fragment(result).to_s
+    # decoded_doc = Nokogiri::XML(decoded_result)
+    #
+    # result = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Result').value
+    # domain = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Domain').value
+    # price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Price').value
+    # renewal_price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@RenewalPrice').value
+    # total = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Total').value
+    # order_id = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@OrderID').value
+    #
+    # {
+    #   result:,
+    #   domain:,
+    #   price:,
+    #   renewal_price:,
+    #   total:,
+    #   order_id:
+    # }
   end
 
   def instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)

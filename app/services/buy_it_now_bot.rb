@@ -66,12 +66,14 @@ class BuyItNowBot < ApplicationJob
       next unless cdpr.is_a?(Hash) && cdpr[:result] == 'Success'
 
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-      response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+      gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
-      if response && response[:result] == 'Success'
-        result[:success] = true
-        return result
-      end
+      return result[:success] = true
+
+      # if response && response[:result] == 'Success'
+      #   result[:success] = true
+      #   return result
+      # end
     end
 
     result[:valid] = false
