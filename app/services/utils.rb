@@ -277,7 +277,8 @@ class Utils # rubocop:disable Metrics/ClassLength
     time_without_tz = datetime_str.gsub(/\s*\([A-Z]+\)\s*/, '')
     parsed_time = Time.strptime(time_without_tz, '%m/%d/%Y %I:%M %p')
     Rails.logger.info("parsed time #{parsed_time}".red)
-    final_time = parsed_time + (7 * 3600)
+    # TODO: Add 7 hours during PDT and 8 hours during PST
+    final_time = parsed_time + (8 * 3600)
     utc_time = final_time.utc
     Rails.logger.info("UTC time #{utc_time}".red)
     utc_time
