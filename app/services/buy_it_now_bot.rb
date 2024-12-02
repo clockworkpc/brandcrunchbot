@@ -52,8 +52,12 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
-  def purchase_outright(domain_name:, attempts: 5)
+  def purchase_outright(domain_name:, attempts: 5, fifty_dollar_auction: false)
     result = { valid: true, rescheduled: false, success: false }
+
+    # TODO: Batch `get_auction_details` 45 requests, every 0.5 seconds
+    # Then wait 60 seconds and try again
+
     (0..attempts).to_a.each do |i|
       sleep 0.25
       Rails.logger.info("Attempt ##{i + 1}")
@@ -112,14 +116,20 @@ class BuyItNowBot < ApplicationJob
 
   def perform(auction, auction_end_time = nil)
     domain_name = auction.domain_name
+    fifty_dollar_auction = auction.price == 50 && auction.bin_price == 50
 
     # Check whether still a valid Auction
     preliminary_validation(domain_name:, auction_end_time:)
 
     # Make up to 5 rapid attempts to purchase
     # End job if purchase attempt completed, be it successful or not
-    attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
-    result = purchase_outright(domain_name:, attempts:)
+    attempts = if fifty_dollar_auction
+                 120
+               else
+                 ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
+               end
+
+    result = purchase_outright(domain_name:, attempts:, fifty_dollar_auction:)
     return if result[:success] == true
 
     sleep 1

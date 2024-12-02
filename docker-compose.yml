@@ -18,8 +18,6 @@ services:
       - /run/user/1000/bus:/run/user/1000/bus
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
-      - RAILS_ENV=development
-      - DATABASE_URL=postgres://brandcrunchbot:password123@db:5432/brandcrunchbot_development
       - REDIS_URL=redis://redis:6379/0
       - INSIDE_DOCKER=true
       - TERM=xterm-256color
@@ -30,6 +28,8 @@ services:
       - GID=1000
       - BUY_IT_NOW_COUNTER=10
       - BUY_IT_NOW_SLEEP=0.5
+      - POSTGRES_USER=brandcrunchbot
+      - POSTGRES_PASSWORD=password123
 
     ports:
       - "3000:3000"           # Expose port 3000 for the Rails app
