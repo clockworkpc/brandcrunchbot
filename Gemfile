@@ -50,16 +50,19 @@ group :development, :test do
   gem 'guard-rails', require: false
   gem 'guard-rspec'
   gem 'guard-rubocop'
+  gem "observer"
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'pry-theme'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'rubocop', require: false
+  gem 'rubocop-gemfile', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
   gem 'shoulda-matchers'
+  gem 'solargraph'
 end
 
 group :development do
