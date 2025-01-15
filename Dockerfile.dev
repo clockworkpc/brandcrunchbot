@@ -11,9 +11,7 @@ RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
 COPY Gemfile ./
 
 # Install Bundler and gems
-RUN gem install bundler && bundle install 
-
-
+RUN gem install bundle && bundle install
 
 # Copy the rest of the application code
 COPY . .

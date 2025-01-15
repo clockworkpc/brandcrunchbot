@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.3.6'
+ruby '3.4.1'
 
 gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', require: false
@@ -50,16 +50,19 @@ group :development, :test do
   gem 'guard-rails', require: false
   gem 'guard-rspec'
   gem 'guard-rubocop'
+  gem "observer"
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'pry-theme'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'rubocop', require: false
+  gem 'rubocop-gemfile', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
   gem 'shoulda-matchers'
+  gem 'solargraph'
 end
 
 group :development do
