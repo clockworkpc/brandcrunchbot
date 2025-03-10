@@ -1,0 +1,65 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
+
+AllCops:
+  Exclude:
+    - 'gems/**/*'
+    - 'more-stuff/**/*'
+    - 'db/**/*'
+    - 'doc/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'tmp/**/*'
+    - 'lib/ctm/uri/**/*'
+    - 'lib/twilio_ruby_old/**/*'
+    - 'vendor/bundle/**/*' # on CircleCI
+    - 'node_modules/**/*'
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  SuggestExtensions: false
+
+Layout/ArgumentAlignment:
+  Enabled: false
+  Autocorrect: true
+
+Layout/LineLength:
+  Enabled: true
+  Autocorrect: true
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: true
+  Autocorrect: true
+  Max: 30
+
+Metrics/ClassLength:
+  Enabled: true
+  Autocorrect: true
+
+Metrics/MethodLength:
+  Enabled: true
+  Autocorrect: true
+  Max: 20
+
+Naming/AccessorMethodName:
+  Enabled: true
+  Autocorrect: true
+
+Style/Documentation:
+  Enabled: false
+  Autocorrect: true
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+  Autocorrect: true
+
+Style/MutableConstant:
+  Enabled: false
+  Autocorrect: true
+
+Style/NumericPredicate:
+  Enabled: true
+  Autocorrect: true
