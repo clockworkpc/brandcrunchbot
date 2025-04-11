@@ -60,6 +60,7 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
   gem 'shoulda-matchers'
+  gem 'ruby-lsp'
 end
 
 group :development do

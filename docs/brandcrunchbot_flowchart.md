@@ -148,3 +148,10 @@ NOTE: Future Feature Request: place proxy bid for a specified domain even if no 
 | TRUE                      | FALSE                     | N/A                                     | N/A         |
 
 NOTE: Ascertain whether the Bot can effect the purchase and not just add to cart.
+
+
+1. Wait for screen "Will be available BUY IT NOW shortly"
+2. Tap Buy It Now button for any number of minutes
+
+- Where 'Price' == "$1", initial (automatic) bid
+- Try CURL request instead of API call for $50 auctions?
