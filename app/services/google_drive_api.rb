@@ -14,10 +14,10 @@ class GoogleDriveApi
 
     if credentials.nil?
       url = authorizer.get_authorization_url(base_url:)
-      puts "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}"
-      puts 'Have you authorised the application?'
-      puts '1. Yes'
-      puts '0. No'
+      Rails.logger.debug { "Open the following URL in the browser and enter the resulting code after authorization:\n#{url}" }
+      Rails.logger.debug 'Have you authorised the application?'
+      Rails.logger.debug '1. Yes'
+      Rails.logger.debug '0. No'
       response = gets.strip.to_i
       code = OauthSession.last.code if response == 1
       authorizer.get_and_store_credentials_from_code(user_id:, code:, base_url:)
@@ -41,10 +41,10 @@ class GoogleDriveApi
   def list_most_recently_modified_files(int: 10)
     response = @service.list_files(page_size: int,
                                    fields: 'nextPageToken, files(id, name)')
-    puts 'Files:'
-    puts 'No files found' if response.files.empty?
+    Rails.logger.debug 'Files:'
+    Rails.logger.debug 'No files found' if response.files.empty?
     response.files.each do |file|
-      puts "#{file.name} (#{file.id})"
+      Rails.logger.debug "#{file.name} (#{file.id})"
     end
   end
 
@@ -80,7 +80,7 @@ class GoogleDriveApi
     # application/vnd.google-apps.video
   end
 
-  def create_folder(parent_folder_id:, folder_path:, team_drive_id: nil) # rubocop:disable Metrics/MethodLength
+  def create_folder(parent_folder_id:, folder_path:, team_drive_id: nil)
     name = File.basename(folder_path)
     mime_type = 'application/vnd.google-apps.folder'
 
@@ -101,7 +101,7 @@ class GoogleDriveApi
                                   supports_team_drives:,
                                   fields:)
 
-    puts Rainbow("Folder created: #{folder.name}").orange
+    Rails.logger.debug Rainbow("Folder created: #{folder.name}").orange
     folder
   end
 
@@ -116,7 +116,7 @@ class GoogleDriveApi
                                 fields:,
                                 upload_source:,
                                 supports_all_drives: true)
-    puts Rainbow("File created: #{file.name}").orange
+    Rails.logger.debug Rainbow("File created: #{file.name}").orange
     file.id
   end
 

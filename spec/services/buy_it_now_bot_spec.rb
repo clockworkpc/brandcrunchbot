@@ -8,7 +8,7 @@ RSpec.describe BuyItNowBot do
     @auction = Auction.create!(domain_name:, bin_price:)
   end
 
-  it 'attempts to purchase a given domain', :focus do
+  it 'attempts to purchase a given domain' do
     # reload!
     # @service = BuyItNowBot.new
     # domain_name = 'rewardscrm.com'

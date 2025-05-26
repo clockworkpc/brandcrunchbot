@@ -65,7 +65,8 @@ RSpec.describe GodaddyApi do
       #
       # Invoke the method
       res = @service.get_auction_details(domain_name:)
-      require 'pry'; binding.pry
+      require 'pry'
+      binding.pry
 
       # Expect the response to match the stubbed auction details
       expect(res).to eq(auction_details)
@@ -87,7 +88,7 @@ RSpec.describe GodaddyApi do
       domain_name = '19ventures.com'
       s_bid_amount = 5
 
-      details = @service.get_auction_details(domain_name:)
+      @service.get_auction_details(domain_name:)
 
       res = @service.place_bid_or_purchase(domain_name:, s_bid_amount:)
       pp res
@@ -108,7 +109,7 @@ RSpec.describe GodaddyApi do
       domain_name = 'wincademy.com'
       cdpr = @service.estimate_closeout_domain_price(domain_name:)
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-      res = @service.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+      @service.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
     end
   end
 end

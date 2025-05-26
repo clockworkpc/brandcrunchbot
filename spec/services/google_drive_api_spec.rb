@@ -23,14 +23,14 @@ RSpec.describe GoogleDriveApi do
     end
 
     it 'creates a folder', focus: false do
-      res = @gda.create_folder(
+      @gda.create_folder(
         parent_folder_id:,
         folder_path:
       )
     end
 
     it 'uploads to a folder', focus: false do
-      res = @gda.upload_to_folder(
+      @gda.upload_to_folder(
         parent_folder_id:,
         fields: 'id, name',
         upload_source:

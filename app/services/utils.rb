@@ -43,7 +43,7 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.latest_csv_in_tmp(str: nil)
-    Dir.glob("#{Rails.root.join("tmp/#{str}**.csv")}").max_by { |f| File.mtime(f) }
+    Dir.glob(Rails.root.join("tmp/#{str}**.csv").to_s).max_by { |f| File.mtime(f) }
   end
 
   def self.csv_up_to_date?(str:)
@@ -53,7 +53,7 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.latest_product_attribute_selection_directory
-    Dir.glob("#{Rails.root.join('tmp/product_attributes/product_attributes**')}")
+    Dir.glob(Rails.root.join('tmp/product_attributes/product_attributes**').to_s)
       .select { |f| File.directory?(f) }
       .max_by { |dir| File.mtime(dir) }
   end
@@ -104,7 +104,7 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.notify_send(str, sound_path = nil)
-    sound = if sound_path.nil?
+    if sound_path.nil?
       'app/assets/sounds/mixkit-elevator-tone-2863.wav'
     elsif sound_path.eql?(:coin)
       'app/assets/sounds/smw_coin.wav'
@@ -112,7 +112,7 @@ class Utils # rubocop:disable Metrics/ClassLength
       'app/assets/sounds/smw_course_clear.wav'
     end
 
-    puts Rainbow(str).orange
+    Rails.logger.debug Rainbow(str).orange
     return if Rails.env.match?(/production|test/)
 
     # system("notify-send '#{str}' && mpv '#{sound}'")
@@ -223,8 +223,8 @@ class Utils # rubocop:disable Metrics/ClassLength
   end
 
   def self.working_days_to_date(gsa:, input_date: Time.zone.today.iso8601)
-    start_date = Date.new(Time.zone.today.year, 1, 1)
-    end_date = Date.parse(input_date)
+    Date.new(Time.zone.today.year, 1, 1)
+    Date.parse(input_date)
     key = :spreadsheet_id_production_calendar
     spreadsheet_id = Rails.application.credentials[key]
     range = 'master!F2:F'
@@ -276,12 +276,12 @@ class Utils # rubocop:disable Metrics/ClassLength
   def self.convert_to_utc(datetime_str:)
     # Extract the timezone abbreviation from the string (e.g., "PDT" or "PST")
     timezone = datetime_str[/(?<=\()\w+(?=\))/]
-    offset_seconds = timezone == 'PDT' ? (7 * 3600) : (8 * 3600)
+    timezone == 'PDT' ? (7 * 3600) : (8 * 3600)
 
     # Remove the timezone part from the string and parse the time
     time_without_tz = datetime_str.gsub(/\s*\([A-Z]+\)\s*/, '')
     parsed_time = Time.strptime(time_without_tz, '%m/%d/%Y %I:%M %p')
-    la_zone = ActiveSupport::TimeZone["America/Los_Angeles"]
+    la_zone = ActiveSupport::TimeZone['America/Los_Angeles']
     la_time = la_zone.local(parsed_time.year, parsed_time.month, parsed_time.day,
       parsed_time.hour, parsed_time.min, parsed_time.sec)
     Rails.logger.info("parsed time #{la_time}".red)
@@ -291,17 +291,6 @@ class Utils # rubocop:disable Metrics/ClassLength
     Rails.logger.info("UTC time #{utc_time}".red)
     utc_time
   end
-
-  # def self.convert_to_utc(datetime_str:)
-  #   time_without_tz = datetime_str.gsub(/\s*\([A-Z]+\)\s*/, '')
-  #   parsed_time = Time.strptime(time_without_tz, '%m/%d/%Y %I:%M %p')
-  #   Rails.logger.info("parsed time #{parsed_time}".red)
-  #   # TODO: Add 7 hours during PDT and 8 hours during PST
-  #   final_time = parsed_time + (8 * 3600)
-  #   utc_time = final_time.utc
-  #   Rails.logger.info("UTC time #{utc_time}".red)
-  #   utc_time
-  # end
 
   def self.testdjs
     Rails.logger.info(Time.now.utc)
@@ -314,9 +303,9 @@ class Utils # rubocop:disable Metrics/ClassLength
     Rails.logger.info(Time.now.utc)
     Rails.logger.info(Delayed::Job.count)
 
-    start_time = Time.now
+    start_time = Time.zone.now
 
-    while Time.now - start_time < 10
+    while Time.zone.now - start_time < 10
       # Your loop code here
       Rails.logger.info(Delayed::Job.count)
       sleep 1

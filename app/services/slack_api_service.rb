@@ -1,13 +1,12 @@
 class SlackApiService
   attr_reader :client, :users
+
   def initialize
     @client = Slack::Web::Client.new
     @users = JSON.parse(File.read('app/assets/config/slack_users.json'))['members']
   end
 
-  def auth_test
-    @client.auth_test
-  end
+  delegate :auth_test, to: :@client
 
   def post_message(text:, thread_ts: nil, channel: '#office-robot-updates')
     @client.chat_postMessage(channel:, text:, as_user: true, thread_ts:)

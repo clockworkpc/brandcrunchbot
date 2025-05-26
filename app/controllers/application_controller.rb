@@ -12,7 +12,6 @@ def slack_current_user
   sas.post_message(text:)
 end
 
-# rubocop:disable Metrics/MethodLength
 def text_for_private_slack
   time = Time.now.localtime('-07:00').strftime('%r')
   action = params[:action].to_s.titleize
@@ -35,7 +34,6 @@ def text_for_private_slack
     Office Robot received a request at #{time} to update *#{action}* for *#{lines_text}* on your behalf, and will start work as soon as possible.
   HEREDOC
 end
-# rubocop:enable Metrics/MethodLength
 
 def slack_current_user_privately
   text = text_for_private_slack

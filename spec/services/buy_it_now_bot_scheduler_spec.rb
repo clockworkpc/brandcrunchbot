@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe BuyItNowBotScheduler, type: :model do
   let(:google_sheets_api) { instance_double(GoogleSheetsApi) }
-  let(:service) { instance_double('Google::Apis::SheetsV4::SheetsService') }
+  let(:service) { instance_double(Google::Apis::SheetsV4::SheetsService) }
   let(:godaddy_api) { instance_double(GodaddyApi) }
   let(:buy_it_now_bot) { instance_double(BuyItNowBot) }
   let(:scheduler) { described_class.new }

@@ -130,7 +130,7 @@ RSpec.describe Utils do
     end
 
     it 'returns working days to date', focus: false do
-      res = described_class.working_days_to_date
+      described_class.working_days_to_date
     end
 
     it 'returns a Hash for this week', focus: false do
@@ -146,7 +146,7 @@ RSpec.describe Utils do
       expect(res.count).to eq(52)
     end
 
-    it 'returns all start dates to date', focus: true do
+    it 'returns all start dates to date' do
       today = Date.current
       monday = today.monday? ? today.iso8601 : today.prev_occurring(:monday).iso8601
       res = described_class.start_dates_to_date

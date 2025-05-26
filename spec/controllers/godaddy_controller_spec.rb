@@ -49,7 +49,7 @@ RSpec.describe GodaddyController, type: :controller do
   end
 
   describe 'POST #google_sheet' do
-    it 'returns 200 with params in JSON', :focus do
+    it 'returns 200 with params in JSON' do
       post :google_sheet, params: webhook_params
       expect(response).to have_http_status(:ok)
       expect(response.body).to eq(response_json)

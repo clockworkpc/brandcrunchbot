@@ -110,9 +110,9 @@ class GodaddyApi
 
   def parse_auction_details(response)
     doc = Nokogiri::XML(response.body)
-    doc.at_xpath('//soap:Body').child.child.child.text.scan(/[A-Za-z0-9]+=".*"/).first.split('" ').map do |kv|
+    doc.at_xpath('//soap:Body').child.child.child.text.scan(/[A-Za-z0-9]+=".*"/).first.split('" ').to_h do |kv|
       kv.delete('"').split('=')
-    end.to_h
+    end
   end
 
   def parse_auction_list(response)
@@ -143,8 +143,8 @@ class GodaddyApi
   end
 
   def place_bid_or_purchase(domain_name:, s_bid_amount:)
-    key = Rails.application.credentials[:ote_key]
-    secret = Rails.application.credentials[:ote_secret]
+    Rails.application.credentials[:ote_key]
+    Rails.application.credentials[:ote_secret]
 
     soap_action_name = 'PlaceBidOrPurchase'
     basename = 'place_bid_or_purchase'

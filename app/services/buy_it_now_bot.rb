@@ -18,8 +18,8 @@ class BuyItNowBot < ApplicationJob
     xml_fragment = response_node.first.children.first.text
 
     Nokogiri::XML(xml_fragment)
-            .xpath('//InstantPurchaseCloseoutDomain')
-            .first.to_h
+      .xpath('//InstantPurchaseCloseoutDomain')
+      .first.to_h
   end
 
   def scheduled_job(auction)
@@ -52,39 +52,39 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
-  def purchase_outright(domain_name:, attempts: 5)
+  def purchase_outright(domain_name:, attempts_per_second: 4, total_attempts: nil, total_seconds: nil)
+    total_attempts ||= attempts_per_second * total_seconds
+    interval = 1.0 / attempts_per_second
+
     result = { valid: true, rescheduled: false, success: false }
-    (0..attempts).to_a.each do |i|
-      sleep 0.25
+
+    total_attempts.times do |i|
+      sleep interval
       Rails.logger.info("Attempt ##{i + 1}")
 
-      auction_details = gda.get_auction_details(domain_name:)
-      initial_check = check_auction(auction_details:)
+      auction_details = gda.get_auction_details(domain_name: domain_name)
+      initial_check = check_auction(auction_details: auction_details)
       next if initial_check[:valid] == false
 
-      cdpr = gda.estimate_closeout_domain_price(domain_name:)
+      cdpr = gda.estimate_closeout_domain_price(domain_name: domain_name)
       next unless cdpr.is_a?(Hash) && cdpr[:result] == 'Success'
 
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-      gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+      gda.instant_purchase_closeout_domain(domain_name: domain_name, closeout_domain_price_key: closeout_domain_price_key)
 
       result[:success] = true
       return result
-
-      # if response && response[:result] == 'Success'
-      #   result[:success] = true
-      #   return result
-      # end
     end
 
     result[:valid] = false
     result
   end
+  nd
 
   def count_down_until(domain_name:, auction_end_time:, secs_f:)
     while Time.now.utc < auction_end_time.utc
       remaining_time = auction_end_time - Time.now.utc
-      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds" # rubocop:disable Metrics/LineLength
+      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds"
       Rails.logger.info(text.yellow)
       sleep_time = [remaining_time, secs_f].min
       sleep(sleep_time)
