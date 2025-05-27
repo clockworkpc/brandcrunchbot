@@ -18,7 +18,7 @@ services:
       - /run/user/1000/bus:/run/user/1000/bus
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
-      - RAILS_ENV=development
+      - RAILS_ENV=test
       - DATABASE_URL=postgres://brandcrunchbot:password123@db:5432/brandcrunchbot_development
       - REDIS_URL=redis://redis:6379/0
       - INSIDE_DOCKER=true

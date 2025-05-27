@@ -79,7 +79,6 @@ class BuyItNowBot < ApplicationJob
     result[:valid] = false
     result
   end
-  nd
 
   def count_down_until(domain_name:, auction_end_time:, secs_f:)
     while Time.now.utc < auction_end_time.utc
@@ -118,8 +117,8 @@ class BuyItNowBot < ApplicationJob
 
     # Make up to 5 rapid attempts to purchase
     # End job if purchase attempt completed, be it successful or not
-    attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
-    result = purchase_outright(domain_name:, attempts:)
+    attempts_per_second = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
+    result = purchase_outright(domain_name:, attempts_per_second:)
     return if result[:success] == true
 
     sleep 1
@@ -128,6 +127,6 @@ class BuyItNowBot < ApplicationJob
     second_check = check_auction(auction_details: second_auction_details)
     return unless second_check[:valid]
 
-    purchase_outright(domain_name:, attempts: 2)
+    purchase_outright(domain_name:, attempts_per_second: 2)
   end
 end

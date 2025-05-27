@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="GdAuctionsBiddingWSAPI_v2">
+  <soap:Body>
+    <ns:EstimateCloseoutDomainPriceResponse>
+      <ns:EstimateCloseoutDomainPriceResult>
+        <![CDATA[
+          <EstimateCloseoutDomainPrice Result="Failure" Domain="example.com" />
+        ]]>
+      </ns:EstimateCloseoutDomainPriceResult>
+    </ns:EstimateCloseoutDomainPriceResponse>
+  </soap:Body>
+</soap:Envelope>
+
