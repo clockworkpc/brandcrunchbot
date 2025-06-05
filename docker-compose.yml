@@ -11,7 +11,7 @@ services:
     command: bundle exec rails server -b 0.0.0.0
     working_dir: /rails
     volumes:
-      - .:/rails              # Mount the current directory to /rails inside the container
+      - .:/rails:cached
       - ~/.config/pry/pryrc:/rails/.pryrc:ro
       - ~/.config/guard/Guardfile:/rails/Guardfile:ro
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
