@@ -143,9 +143,6 @@ class GodaddyApi
   end
 
   def place_bid_or_purchase(domain_name:, s_bid_amount:)
-    Rails.application.credentials[:ote_key]
-    Rails.application.credentials[:ote_secret]
-
     soap_action_name = 'PlaceBidOrPurchase'
     basename = 'place_bid_or_purchase'
     kwargs = {
