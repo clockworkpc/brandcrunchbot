@@ -62,15 +62,15 @@ class BuyItNowBot < ApplicationJob
       sleep interval
       Rails.logger.info("Attempt ##{i + 1}")
 
-      auction_details = gda.get_auction_details(domain_name: domain_name)
-      initial_check = check_auction(auction_details: auction_details)
+      auction_details = gda.get_auction_details(domain_name:)
+      initial_check = check_auction(auction_details:)
       next if initial_check[:valid] == false
 
-      cdpr = gda.estimate_closeout_domain_price(domain_name: domain_name)
+      cdpr = gda.estimate_closeout_domain_price(domain_name:)
       next unless cdpr.is_a?(Hash) && cdpr[:result] == 'Success'
 
       closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-      gda.instant_purchase_closeout_domain(domain_name: domain_name, closeout_domain_price_key: closeout_domain_price_key)
+      gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
       result[:success] = true
       return result
