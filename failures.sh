@@ -1,0 +1,7 @@
+spec/routing/customers_routing_spec.rb
+spec/routing/finish_details_routing_spec.rb
+spec/routing/orders_routing_spec.rb
+spec/routing/product_order_items_routing_spec.rb
+spec/routing/product_orders_routing_spec.rb
+spec/routing/products_routing_spec.rb
+spec/services/job_scheduler_spec.rb
