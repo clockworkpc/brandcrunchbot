@@ -103,24 +103,15 @@ class Utils # rubocop:disable Metrics/ClassLength
     hsh
   end
 
-  def self.notify_send(str, sound_path = nil)
-    if sound_path.nil?
-      'app/assets/sounds/mixkit-elevator-tone-2863.wav'
-    elsif sound_path.eql?(:coin)
-      'app/assets/sounds/smw_coin.wav'
-    elsif sound_path.eql?(:complete)
-      'app/assets/sounds/smw_course_clear.wav'
-    end
-
+  def self.notify_send(str)
     Rails.logger.debug Rainbow(str).orange
     return if Rails.env.match?(/production|test/)
 
-    # system("notify-send '#{str}' && mpv '#{sound}'")
     system("notify-send '#{str}'")
   end
 
   def self.simple_datestamp
-    DateTime.now.strftime('%Y-%m-%d')
+    Date.current.strftime('%Y-%m-%d')
   end
 
   def self.list_files_without_duplicates(path:, scan_int:)
@@ -211,12 +202,22 @@ class Utils # rubocop:disable Metrics/ClassLength
     ary
   end
 
-  def self.assign_attr(objekt, attr, value)
-    return objekt if objekt.send(attr).eql?(value)
-
-    objekt.assign_attributes(attr.to_sym => value)
-    objekt
-  end
+  # def self.assign_attr(objekt, attr, value)
+  #   return objekt if objekt.send(attr).eql?(value)
+  #
+  #   objekt.assign_attributes(attr.to_sym => value)
+  #   objekt
+  # end
+  #
+  # def self.assign_attribute_if_changed(record, attribute, new_value)
+  #   raise ArgumentError, "Unknown attribute #{attribute}" unless record.respond_to?(attribute)
+  #
+  #   current = record.public_send(attribute)
+  #   return record if current == new_value
+  #
+  #   record.assign_attributes(attribute => new_value)
+  #   record
+  # end
 
   def self.force_utf8_encoding(str)
     str.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
