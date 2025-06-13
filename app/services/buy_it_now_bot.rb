@@ -5,21 +5,28 @@ class BuyItNowBot < ApplicationJob
     @gda ||= GodaddyApi.new
   end
 
+  # app/jobs/buy_it_now_bot.rb
   def parse_instant_purchase_response(response)
     return { 'Result' => 'Failure' } if response.is_a?(Hash) && response[:ok] == false
 
     doc = Nokogiri::XML(response.body)
-    Rails.logger.info(response.body)
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
     }
-    response_node = doc.xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
-    xml_fragment = response_node.first.children.first.text
 
-    Nokogiri::XML(xml_fragment)
-      .xpath('//InstantPurchaseCloseoutDomain')
-      .first.to_h
+    # grab the CDATA-wrapped fragment
+    result_node = doc.at_xpath('//ns:EstimateCloseoutDomainPriceResult/Result', namespaces)
+    xml_fragment = result_node.text
+
+    # parse it into a small Nokogiri doc
+    inner_doc = Nokogiri::XML(xml_fragment)
+    ip_node   = inner_doc.at_xpath('//InstantPurchaseCloseoutDomain')
+
+    # build a Hash of its child elements
+    ip_node
+      .elements
+      .each_with_object({}) { |child, h| h[child.name] = child.text }
   end
 
   def scheduled_job(auction)

@@ -38,7 +38,7 @@ class GodaddyApi
     }
 
     response_node = doc.xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
-    return unless response_node
+    return {} unless response_node
 
     xml_fragment = response_node.first.children.first.text
     parsed_fragment = Nokogiri::XML(xml_fragment)
@@ -68,7 +68,7 @@ class GodaddyApi
     response = https.request(request)
     Rails.logger.info("#{domain_name}: #{response.code}")
     Rails.logger.info(response.body)
-    return unless response.code.to_i == 200
+    return {} unless response.code.to_i == 200
 
     parse_estimate_closeout_domain_price(response)
   end
@@ -109,35 +109,44 @@ class GodaddyApi
   end
 
   def parse_auction_details(response)
+    # load and drop all namespaces
     doc = Nokogiri::XML(response.body)
-    doc.at_xpath('//soap:Body').child.child.child.text.scan(/[A-Za-z0-9]+=".*"/).first.split('" ').to_h do |kv|
-      kv.delete('"').split('=')
+    doc.remove_namespaces!
+
+    # find the CDATA text under GetAuctionDetailsResult
+    cdata = doc.at_xpath('//GetAuctionDetailsResult').text
+
+    # parse the fragment and remove namespaces again
+    frag = Nokogiri::XML(cdata).remove_namespaces!
+
+    # locate the <AuctionDetails> node
+    node = frag.at_xpath('//AuctionDetails')
+    return {} unless node
+
+    # build a hash of its attributes
+    node.attributes.each_with_object({}) do |(name, attr), h|
+      h[name] = attr.value
     end
   end
 
   def parse_auction_list(response)
     doc = Nokogiri::XML(response.body)
-    text = doc.at_xpath('//soap:Body').child.child.child.text
-    ary_ary = text
-              .sub(/<AuctionList IsValid="True" TotalRecords="\d+">/, '')
-              .gsub('Auction ', '').gsub('USD', '').gsub(/(\d+)S/, '\1')
-              .gsub('ValuationPrice="-"', 'ValuationPrice=0')
-              .gsub(/(\d+),(\d+)/, '\1\2')
-              .delete('>"/$')
-              .split('<')
-              .map(&:split).reject(&:empty?)
-    dictionary = ary_ary.map do |ary|
-      ary.map do |str|
-        str.split('=')
-      end
-    end
+    doc.remove_namespaces!
 
-    dictionary.map do |entry|
-      entry.to_h do |ary|
-        key = ary.first.titleize.parameterize(separator: '_').to_sym
-        is_numeric = !Integer(ary[1], exception: false).nil?
-        value = is_numeric ? ary[1].to_i : ary[1]
-        [key, value]
+    cdata_node = doc.at_xpath('//GetAuctionListResult')
+    return [] unless cdata_node
+
+    cdata = cdata_node.text
+    return [] if cdata.empty?
+
+    frag = Nokogiri::XML(cdata).remove_namespaces!
+    return [] unless frag
+
+    frag.xpath('//Auction').map do |node|
+      node.attributes.each_with_object({}) do |(name, attr), h|
+        key = name.underscore.to_sym
+        value = attr.value
+        h[key] = /^\d+$/.match?(value) ? value.to_i : value
       end
     end
   end
@@ -166,25 +175,6 @@ class GodaddyApi
     Rails.logger.info(doc)
     result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult')
     Rails.logger.info(result)
-    # result = doc.at_xpath('//InstantPurchaseCloseoutDomainResult').content
-    # decoded_result = Nokogiri::HTML.fragment(result).to_s
-    # decoded_doc = Nokogiri::XML(decoded_result)
-    #
-    # result = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Result').value
-    # domain = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Domain').value
-    # price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Price').value
-    # renewal_price = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@RenewalPrice').value
-    # total = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@Total').value
-    # order_id = decoded_doc.at_xpath('//InstantPurchaseCloseoutDomain/@OrderID').value
-    #
-    # {
-    #   result:,
-    #   domain:,
-    #   price:,
-    #   renewal_price:,
-    #   total:,
-    #   order_id:
-    # }
   end
 
   def instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
@@ -217,3 +207,4 @@ class GodaddyApi
     result
   end
 end
+
