@@ -68,23 +68,23 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  # config.before(:suite) do
-  #   Rails.application.load_seed # loading seeds
-  #   DatabaseCleaner.allow_remote_database_url = true
-  #
-  #   config.before(:suite) do
-  #     DatabaseCleaner.clean_with :truncation
-  #   end
-  #
-  #   config.before do
-  #     DatabaseCleaner.strategy = :transaction
-  #     DatabaseCleaner.start
-  #   end
-  #
-  #   config.after do
-  #     DatabaseCleaner.clean
-  #   end
-  # end
+  config.before(:suite) do
+    Rails.application.load_seed # loading seeds
+    DatabaseCleaner.allow_remote_database_url = true
+
+    config.before(:suite) do
+      DatabaseCleaner.clean_with :truncation
+    end
+
+    config.before do
+      DatabaseCleaner.strategy = :transaction
+      DatabaseCleaner.start
+    end
+
+    config.after do
+      DatabaseCleaner.clean
+    end
+  end
 
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::IntegrationHelpers, type: :request

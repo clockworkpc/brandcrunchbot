@@ -1,9 +1,9 @@
 require 'time'
 
 class BuyItNowBotScheduler
-  def initialize
+  def initialize(gda: GodaddyApi.new)
     @gsa = GoogleSheetsApi.new
-    @gda = GodaddyApi.new
+    @gda = gda
     @bb = BuyItNowBot.new(gda: @gda)
   end
 
@@ -33,7 +33,7 @@ class BuyItNowBotScheduler
     # TODO: Delete delayed job associated with this auction
     domains_in_spreadsheet = values.map(&:first)
     domains_in_database = Auction.all.map(&:domain_name)
-    redundant_domains = domains_in_database - domains_in_spreadsheet
+    redundant_domains = domains_in_database.uniq - domains_in_spreadsheet
     redundant_domains.each do |domain_name|
       auction = Auction.find_by(domain_name:)
       auction.update!(active: false)

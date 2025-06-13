@@ -38,19 +38,33 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
         )
       end
     end
+  end
 
-    context 'with existing auction data' do
-      # let!(:existing) { Auction.create!(domain_name: 'foo.com', bin_price: 50, active: false) }
-      domain_name = Faker::Internet.domain_name
-      let(:changes) { [{ 'domain_name' => domain_name, 'bin_price' => 150 }] }
+  context 'with existing auction data' do
+    let(:domain_name) { Faker::Internet.domain_name }
+    let!(:existing) do
+      # create the existing record in the database before the example runs
+      Auction.create!(
+        domain_name: domain_name,
+        bin_price: 50,
+        active: false
+      )
+    end
 
-      it 'updates and activates existing auction without changing count' do
-        expect do
-          scheduler.update_active_auctions(changes:)
-        end.not_to change(Auction, :count)
-            .and change { Auction.find_by(domain_name:).bin_price }.from(50).to(150)
-              .and change { Auction.find_by(domain_name:).active }.from(false).to(true)
-      end
+    let(:changes) do
+      # your scheduler expects an array of hashes
+      [{ 'domain_name' => domain_name, 'bin_price' => 150 }]
+    end
+
+    it 'updates and activates existing auction without changing count' do
+      # no new records
+      expect do
+        scheduler.update_active_auctions(changes: changes)
+      end.not_to change(Auction, :count)
+
+      existing.reload # pull the latest values from the DB
+      expect(existing.bin_price).to eq 150
+      expect(existing.active).to be true
     end
   end
 
@@ -59,13 +73,14 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     let!(:b) { Auction.create!(domain_name: 'b.com', active: true, bin_price: 20) }
     let!(:c) { Auction.create!(domain_name: 'c.com', active: true, bin_price: 30) }
 
-    it 'deactivates auctions not in spreadsheet values' do
+    it 'deactivates auctions not in spreadsheet values', :focus do
       values = [['a.com'], ['c.com']]
       scheduler.deactivate_passe_auctions(values:)
+      puts("Auction.count: #{Auction.count}")
 
       expect(a.reload.active).to be true
-      expect(c.reload.active).to be true
       expect(b.reload.active).to be false
+      expect(c.reload.active).to be true
     end
   end
 
@@ -97,6 +112,10 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     end
 
     context 'when API returns valid data' do
+      subject(:scheduler) { described_class.new(gda: gda_double) }
+
+      let(:gda_double) { instance_double(GodaddyApi, get_auction_details: res) }
+
       let(:res) do
         {
           'IsValid' => 'true',
@@ -104,6 +123,7 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
           'Price' => '$123'
         }
       end
+
       let(:parsed_time) { DateTime.new(2025, 1, 1, 10, 0, 0) }
 
       before do
