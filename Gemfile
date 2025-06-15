@@ -36,7 +36,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development, :test do
   # gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  gem 'clipboard'
+  gem 'clipboard', require: false
   gem 'database_cleaner'
   gem 'database_cleaner-active_record'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
