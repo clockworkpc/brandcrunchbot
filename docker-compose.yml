@@ -10,6 +10,7 @@ services:
     command: bundle exec rails server -b 0.0.0.0
     volumes:
       - .:/rails:cached
+      - bundle_cache:/rails/vendor/bundle
       - ~/.config/pry/pryrc:/rails/.pryrc:ro
       - ~/.config/guard/Guardfile:/rails/Guardfile:ro
     environment:
@@ -59,3 +60,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  bundle_cache:

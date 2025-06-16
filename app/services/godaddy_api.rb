@@ -28,31 +28,34 @@ class GodaddyApi
   end
 
   def parse_estimate_closeout_domain_price(response)
-    doc = Nokogiri::XML(response.body)
-
-    Rails.logger.info(response.body)
-
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
     }
 
-    response_node = doc.xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
-    return {} unless response_node
+    Rails.logger.info(response.body)
 
-    xml_fragment = response_node.first.children.first.text
-    parsed_fragment = Nokogiri::XML(xml_fragment)
+    doc = Nokogiri::XML(response.body)
+    node = doc.at_xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
+    return {} unless node
+
+    cdata_content = node.text.strip
+    parsed = Nokogiri::XML(cdata_content)
+    root = parsed.root
+    return {} unless root && root.name == 'EstimateCloseoutDomainPrice'
+
+    extract_attribute = ->(key) { root[key] }
 
     result = {
-      result: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Result'],
-      domain: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Domain'],
-      price: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Price'],
-      renewal_price: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['RenewalPrice'],
-      icann_fee: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['ICANNFee'],
-      taxes: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Taxes'],
-      private_registration: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['PrivateRegistration'],
-      total: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['Total'],
-      closeout_domain_price_key: parsed_fragment.at_xpath('//EstimateCloseoutDomainPrice')['closeoutDomainPriceKey']
+      result: extract_attribute['Result'],
+      domain: extract_attribute['Domain'],
+      price: extract_attribute['Price']&.to_i,
+      renewal_price: extract_attribute['RenewalPrice'],
+      icann_fee: extract_attribute['ICANNFee'],
+      taxes: extract_attribute['Taxes'],
+      private_registration: extract_attribute['PrivateRegistration'],
+      total: extract_attribute['Total'],
+      closeout_domain_price_key: extract_attribute['closeoutDomainPriceKey']
     }
 
     Rails.logger.info("Closeout Key: #{result[:closeout_domain_price_key]}")
@@ -207,4 +210,3 @@ class GodaddyApi
     result
   end
 end
-

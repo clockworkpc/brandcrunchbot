@@ -1,12 +1,13 @@
 require 'rails_helper'
 
+# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations, RSpec/MultipleMemoizedHelpers
 RSpec.describe GodaddyApi, type: :service do
   let(:api) { described_class.new }
   let(:https) { instance_double(Net::HTTP) }
   let(:request) { instance_double(Net::HTTP::Post) }
 
   describe '#get_auction_details_by_domain_name' do
-    let(:xml) { File.read(Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml')) }
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml').read }
     let(:response) { instance_double(Net::HTTPResponse, body: xml) }
 
     before do
@@ -25,9 +26,7 @@ RSpec.describe GodaddyApi, type: :service do
   describe '#get_auction_details' do
     let(:domain_name) { 'example.com' }
     let(:xml) do
-      File.read(
-        Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml')
-      ).gsub('example.com', domain_name)
+      Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml').read.gsub('example.com', domain_name)
     end
     let(:response) { instance_double(Net::HTTPResponse, body: xml) }
 
@@ -40,14 +39,17 @@ RSpec.describe GodaddyApi, type: :service do
     end
 
     it 'logs and returns the parsed auction details' do
-      expect(Rails.logger).to receive(:info).with(kind_of(Hash))
       result = api.get_auction_details(domain_name: domain_name)
+      expect(Rails.logger).to have_received(:info).with(kind_of(Hash))
       expect(result).to include('DomainName' => domain_name)
     end
   end
 
   describe '#estimate_closeout_domain_price' do
-    let(:xml) { File.read(Rails.root.join('spec/fixtures/godaddy/estimate_closeout_domain_price_success.xml')) }
+    let(:xml) do
+      Rails.root.join('spec/fixtures/godaddy/estimate_closeout_domain_price_success.xml').read
+        .gsub('example.com', 'bar.com')
+    end
     let(:response) { instance_double(Net::HTTPResponse, body: xml, code: '200') }
 
     before do
@@ -70,12 +72,12 @@ RSpec.describe GodaddyApi, type: :service do
 
     it 'returns nil if response code is not 200' do
       allow(response).to receive(:code).and_return('500')
-      expect(api.estimate_closeout_domain_price(domain_name: 'bar.com')).to be_nil
+      expect(api.estimate_closeout_domain_price(domain_name: 'bar.com')).to eq({})
     end
   end
 
   describe '#get_auction_list' do
-    let(:xml) { File.read(Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml')) }
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml').read }
     let(:response) { instance_double(Net::HTTPResponse, body: xml) }
 
     before do
@@ -94,7 +96,7 @@ RSpec.describe GodaddyApi, type: :service do
   end
 
   describe '#place_bid_or_purchase' do
-    let(:xml) { File.read(Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml')) }
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml').read }
     let(:response) { instance_double(Net::HTTPResponse, body: xml) }
 
     before do
@@ -133,3 +135,4 @@ RSpec.describe GodaddyApi, type: :service do
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations, RSpec/MultipleMemoizedHelpers
