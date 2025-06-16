@@ -73,7 +73,7 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     let!(:b) { Auction.create!(domain_name: 'b.com', active: true, bin_price: 20) }
     let!(:c) { Auction.create!(domain_name: 'c.com', active: true, bin_price: 30) }
 
-    it 'deactivates auctions not in spreadsheet values', :focus do
+    it 'deactivates auctions not in spreadsheet values' do
       values = [['a.com'], ['c.com']]
       scheduler.deactivate_passe_auctions(values:)
       puts("Auction.count: #{Auction.count}")
