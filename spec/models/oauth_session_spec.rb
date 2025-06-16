@@ -7,9 +7,8 @@ RSpec.describe OauthSession, type: :model do
 
       expect(columns['code'].type).to eq(:string)
       expect(columns['scope'].type).to eq(:string)
-      expect(columns['created_at'].null).to eq(false)
-      expect(columns['updated_at'].null).to eq(false)
+      expect(columns['created_at'].null).to be(false)
+      expect(columns['updated_at'].null).to be(false)
     end
   end
 end
-

@@ -38,10 +38,8 @@ RSpec.describe GoogleDriveApi do
     end
 
     it 'gets and stores credentials if user authorizes' do
-      allow(authorizer).to receive(:get_credentials).and_return(nil)
-      allow(authorizer).to receive(:get_authorization_url).and_return('http://example.com')
       allow(OauthSession).to receive_message_chain(:last, :code).and_return('auth_code')
-      allow(authorizer).to receive(:get_and_store_credentials_from_code).and_return(fake_credentials)
+      allow(authorizer).to receive_messages(get_credentials: nil, get_authorization_url: 'http://example.com', get_and_store_credentials_from_code: fake_credentials)
       allow_any_instance_of(Object).to receive(:gets).and_return('1')
 
       api = described_class.new

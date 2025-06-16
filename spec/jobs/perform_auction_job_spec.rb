@@ -24,10 +24,9 @@ RSpec.describe PerformAuctionJob, type: :job do
       'not_foo'
     end
 
-    allow_any_instance_of(PerformAuctionJob).to receive(:sleep) # disable sleep delay in test
+    allow_any_instance_of(described_class).to receive(:sleep) # disable sleep delay in test
 
     described_class.perform_now(domain_name, s_bid_amount)
     expect(call_count).to eq(10)
   end
 end
-

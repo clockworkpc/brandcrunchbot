@@ -142,7 +142,7 @@ RSpec.describe Utils do
   describe '.start_dates_this_year' do
     it 'includes only Mondays in the year' do
       dates = described_class.start_dates_this_year
-      expect(dates).to all(satisfy { |d| d.monday? })
+      expect(dates).to all(satisfy(&:monday?))
       expect(dates.first).to eq(Date.parse('2023-01-02'))
     end
   end

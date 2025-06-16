@@ -2,28 +2,29 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   # Clean up users before each test to avoid conflicts
-  before(:each) do
-    User.delete_all
+  before do
+    described_class.delete_all
   end
+
   describe 'devise modules' do
     it 'includes database_authenticatable' do
-      expect(User.devise_modules).to include(:database_authenticatable)
+      expect(described_class.devise_modules).to include(:database_authenticatable)
     end
 
     it 'includes registerable' do
-      expect(User.devise_modules).to include(:registerable)
+      expect(described_class.devise_modules).to include(:registerable)
     end
 
     it 'includes recoverable' do
-      expect(User.devise_modules).to include(:recoverable)
+      expect(described_class.devise_modules).to include(:recoverable)
     end
 
     it 'includes rememberable' do
-      expect(User.devise_modules).to include(:rememberable)
+      expect(described_class.devise_modules).to include(:rememberable)
     end
 
     it 'includes validatable' do
-      expect(User.devise_modules).to include(:validatable)
+      expect(described_class.devise_modules).to include(:validatable)
     end
   end
 
@@ -191,8 +192,8 @@ RSpec.describe User, type: :model do
       end
 
       it 'creates user, authorizes them, and sends welcome email' do
-        user = User.create!(user_params)
-        
+        user = described_class.create!(user_params)
+
         expect(user.authorized).to be true
         expect(UserMailer).to have_received(:welcome_email).with(user)
         expect(mailer_double).to have_received(:deliver_now)
@@ -209,9 +210,9 @@ RSpec.describe User, type: :model do
       end
 
       it 'creates user, does not authorize them, and does not send welcome email' do
-        user = User.create!(user_params)
-        
-        expect(user.authorized).to be_falsy  # Could be false or nil
+        user = described_class.create!(user_params)
+
+        expect(user.authorized).to be_falsy # Could be false or nil
         expect(UserMailer).not_to have_received(:welcome_email)
         expect(mailer_double).not_to have_received(:deliver_now)
       end
@@ -220,7 +221,7 @@ RSpec.describe User, type: :model do
 
   describe 'database attributes' do
     it 'has an authorized attribute' do
-      user = User.new
+      user = described_class.new
       expect(user).to respond_to(:authorized)
       expect(user).to respond_to(:authorized=)
     end
@@ -229,11 +230,11 @@ RSpec.describe User, type: :model do
   describe 'validations' do
     before do
       # Clean up any existing users to avoid uniqueness conflicts
-      User.delete_all
+      described_class.delete_all
     end
 
     it 'validates presence of email' do
-      user = User.new(password: 'password123')
+      user = described_class.new(password: 'password123')
       expect(user).not_to be_valid
       expect(user.errors[:email]).to include("can't be blank")
     end
@@ -252,7 +253,7 @@ RSpec.describe User, type: :model do
     end
 
     it 'validates password presence' do
-      user = User.new(email: 'test@example.com')
+      user = described_class.new(email: 'test@example.com')
       expect(user).not_to be_valid
       expect(user.errors[:password]).to include("can't be blank")
     end

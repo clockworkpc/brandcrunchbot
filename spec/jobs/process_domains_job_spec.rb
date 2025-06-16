@@ -7,8 +7,8 @@ RSpec.describe ProcessDomainsJob, type: :job do
   before do
     allow(GodaddyApi).to receive(:new).and_return(ga_double)
     allow(ga_double).to receive(:get_auction_details).with(domain_name: 'example.com').and_return({
-      'AuctionEndTime' => '2025-12-31 23:59:59'
-    })
+                                                                                                    'AuctionEndTime' => '2025-12-31 23:59:59'
+                                                                                                  })
     allow(PerformAuctionJob).to receive(:set).and_return(PerformAuctionJob)
     allow(PerformAuctionJob).to receive(:perform_later)
   end
@@ -22,4 +22,3 @@ RSpec.describe ProcessDomainsJob, type: :job do
     expect(PerformAuctionJob).to have_received(:perform_later).with('example.com')
   end
 end
-

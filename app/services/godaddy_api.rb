@@ -127,9 +127,7 @@ class GodaddyApi
     return {} unless node
 
     # build a hash of its attributes
-    node.attributes.each_with_object({}) do |(name, attr), h|
-      h[name] = attr.value
-    end
+    node.attributes.transform_values(&:value)
   end
 
   def parse_auction_list(response)

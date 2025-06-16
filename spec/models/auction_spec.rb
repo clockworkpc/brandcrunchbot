@@ -13,18 +13,18 @@ RSpec.describe Auction, type: :model do
       expect(columns['auction_end_time'].type).to eq(:datetime)
 
       expect(columns['active'].type).to eq(:boolean)
-      expect(bool.cast(columns['active'].default)).to eq(true)
-      expect(columns['active'].null).to eq(false)
+      expect(bool.cast(columns['active'].default)).to be(true)
+      expect(columns['active'].null).to be(false)
 
       expect(columns['is_valid'].type).to eq(:boolean)
-      expect(bool.cast(columns['is_valid'].default)).to eq(true)
-      expect(columns['is_valid'].null).to eq(false)
+      expect(bool.cast(columns['is_valid'].default)).to be(true)
+      expect(columns['is_valid'].null).to be(false)
 
       expect(columns['created_at'].type).to eq(:datetime)
-      expect(columns['created_at'].null).to eq(false)
+      expect(columns['created_at'].null).to be(false)
 
       expect(columns['updated_at'].type).to eq(:datetime)
-      expect(columns['updated_at'].null).to eq(false)
+      expect(columns['updated_at'].null).to be(false)
     end
   end
 
@@ -40,4 +40,3 @@ RSpec.describe Auction, type: :model do
     end
   end
 end
-

@@ -31,7 +31,7 @@ RSpec.describe GodaddyController, type: :controller do
       it 'returns success message' do
         post :google_sheet, params: valid_params
 
-        expect(JSON.parse(response.body)).to eq({ 'message' => 'Data received successfully' })
+        expect(response.parsed_body).to eq({ 'message' => 'Data received successfully' })
       end
 
       it 'calls BuyItNowBotScheduler with changes values' do
@@ -109,7 +109,7 @@ RSpec.describe GodaddyController, type: :controller do
       it 'returns error message' do
         post :google_sheet, params: invalid_params
 
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response).to have_key('error')
         expect(parsed_response['error']).to include('godaddy')
       end
@@ -189,7 +189,7 @@ RSpec.describe GodaddyController, type: :controller do
     end
   end
 
- describe 'CSRF protection' do
+  describe 'CSRF protection' do
     it 'allows POST requests without CSRF token' do
       # This test verifies that CSRF protection is skipped by making a request
       # without setting up CSRF tokens and expecting it to succeed
@@ -199,7 +199,7 @@ RSpec.describe GodaddyController, type: :controller do
           changes: {}
         }
       }
-      
+
       expect(response).to have_http_status(:ok)
     end
   end

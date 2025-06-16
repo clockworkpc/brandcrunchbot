@@ -7,11 +7,6 @@ class BuyItNowBotScheduler
     @bb = BuyItNowBot.new(gda: @gda)
   end
 
-  # def retrieve_domains_from_google_sheet(changes:)
-  #   spreadsheet_id = Rails.application.credentials[:spreadsheet_id]
-  #   @gsa.get_spreadsheet_values(spreadsheet_id:, range:)
-  # end
-
   def update_active_auctions(changes:)
     return if changes.blank?
 
@@ -39,36 +34,6 @@ class BuyItNowBotScheduler
       auction.update!(active: false)
     end
   end
-
-  # def extract_auction_end_time(res:)
-  #   # Extract the time zone abbreviation (PDT) and map it to its UTC offset
-  #   auction_end_time_str = res['AuctionEndTime']
-  #   time_zone_abbr = auction_end_time_str[/\(([A-Z]+)\)/, 1] # Extract PDT
-  #   auction_end_time_str = auction_end_time_str.gsub(/\s*\([A-Z]+\)\s*/, '') # Remove the time zone abbreviation
-  #
-  #   # Handle common US time zones (you can extend this as needed)
-  #   time_zone_offsets = {
-  #     'PST' => '-08:00', # Pacific Standard Time
-  #     'PDT' => '-07:00', # Pacific Daylight Time
-  #     'EST' => '-05:00', # Eastern Standard Time
-  #     'EDT' => '-04:00', # Eastern Daylight Time
-  #     'CST' => '-06:00', # Central Standard Time
-  #     'CDT' => '-05:00'  # Central Daylight Time
-  #   }
-  #
-  #   # Find the UTC offset for the extracted time zone abbreviation
-  #   utc_offset = time_zone_offsets[time_zone_abbr] || '+00:00' # Default to UTC if not found
-  #
-  #   # Parse the date and time, then apply the UTC offset
-  #   begin
-  #     auction_end_time = DateTime.strptime(auction_end_time_str, '%m/%d/%Y %I:%M %p').new_offset(utc_offset).utc
-  #   rescue ArgumentError => e
-  #     Rails.logger.error "Failed to parse auction end time: #{auction_end_time_str} - Error: #{e.message}"
-  #     auction_end_time = nil
-  #   end
-  #   Rails.logger.info("END TIME: #{auction_end_time}, now #{DateTime.now.utc}".red)
-  #   auction_end_time
-  # end
 
   def convert_to_utc(res:)
     datetime_str = res['AuctionEndTime']
@@ -120,8 +85,6 @@ class BuyItNowBotScheduler
     end
 
     Rails.logger.info("NO JOB EXISTS for #{auction.domain_name}".red)
-    # datetime_str = updated_auction.auction_end_time
-    # auction_end_time = Utils.convert_to_utc(datetime_str:)
     auction_end_time = updated_auction.auction_end_time
     schedule_buy_it_now_bot(auction: updated_auction, auction_end_time:)
   rescue StandardError => e
