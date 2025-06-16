@@ -17,12 +17,12 @@ RSpec.describe GoogleDriveApi do
     allow(Google::Apis::DriveV3::DriveService).to receive(:new).and_return(fake_service)
 
     # Stub authorize method
-    allow_any_instance_of(GoogleDriveApi).to receive(:authorize).and_return(fake_credentials)
+    allow_any_instance_of(described_class).to receive(:authorize).and_return(fake_credentials)
   end
 
   describe '#initialize' do
     it 'initializes service and sets application name' do
-      expect(fake_service).to receive(:client_options).and_return(double(application_name: nil))
+      expect(fake_service).to receive(:client_options).and_return(fake_client_options)
       expect { described_class.new }.not_to raise_error
     end
   end
