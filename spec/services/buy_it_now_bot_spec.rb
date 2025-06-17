@@ -44,17 +44,17 @@ describe BuyItNowBot, type: :job do
       let(:xml_body) do
         <<~XML
           <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-            <soap:Body>
-              <ns:EstimateCloseoutDomainPriceResult xmlns:ns="GdAuctionsBiddingWSAPI_v2">
-                <Result><![CDATA[
-                  <InstantPurchaseCloseoutDomain>
-                    <DomainName>example.com</DomainName>
-                    <Price>10.99</Price>
-                    <IsValid>True</IsValid>
-                  </InstantPurchaseCloseoutDomain>
-                ]]></Result>
-              </ns:EstimateCloseoutDomainPriceResult>
-            </soap:Body>
+          <soap:Body>
+          <ns:EstimateCloseoutDomainPriceResult xmlns:ns="GdAuctionsBiddingWSAPI_v2">
+          <Result><![CDATA[
+          <InstantPurchaseCloseoutDomain>
+          <DomainName>example.com</DomainName>
+          <Price>10.99</Price>
+          <IsValid>True</IsValid>
+          </InstantPurchaseCloseoutDomain>
+          ]]></Result>
+          </ns:EstimateCloseoutDomainPriceResult>
+          </soap:Body>
           </soap:Envelope>
         XML
       end
@@ -92,13 +92,13 @@ describe BuyItNowBot, type: :job do
       let(:xml_body) do
         <<~XML
           <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-            <soap:Body>
-              <ns:EstimateCloseoutDomainPriceResult xmlns:ns="GdAuctionsBiddingWSAPI_v2">
-                <Result>
-                  <![CDATA[<InstantPurchaseCloseoutDomain><CloseoutDomainPriceKey>ABC123</CloseoutDomainPriceKey></InstantPurchaseCloseoutDomain>]]>
-                </Result>
-              </ns:EstimateCloseoutDomainPriceResult>
-            </soap:Body>
+          <soap:Body>
+          <ns:EstimateCloseoutDomainPriceResult xmlns:ns="GdAuctionsBiddingWSAPI_v2">
+          <Result>
+          <![CDATA[<InstantPurchaseCloseoutDomain><CloseoutDomainPriceKey>ABC123</CloseoutDomainPriceKey></InstantPurchaseCloseoutDomain>]]>
+          </Result>
+          </ns:EstimateCloseoutDomainPriceResult>
+          </soap:Body>
           </soap:Envelope>
         XML
       end
@@ -118,7 +118,7 @@ describe BuyItNowBot, type: :job do
 
     let(:wrapper) do
       double(
-        PerformAuctionJob,
+        'PerformAuctionJob',
         job_data: { 'arguments' => [{ '_aj_globalid' => auction.to_global_id.to_s }] }
       )
     end
