@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="GdAuctionsBiddingWSAPI_v2">
+  <soap:Body>
+    <ns:InstantPurchaseCloseoutDomainResponse>
+      <ns:InstantPurchaseCloseoutDomainResult>
+        <![CDATA[
+          <InstantPurchaseCloseoutDomain Result="Success" Domain="example.com" Price="25" RenewalPrice="20" Total="45.18" OrderID="987654321" />
+        ]]>
+      </ns:InstantPurchaseCloseoutDomainResult>
+    </ns:InstantPurchaseCloseoutDomainResponse>
+  </soap:Body>
+</soap:Envelope>

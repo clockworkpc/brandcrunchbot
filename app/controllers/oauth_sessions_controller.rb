@@ -8,8 +8,7 @@ class OauthSessionsController < ApplicationController
   end
 
   # GET /oauth_sessions/1 or /oauth_sessions/1.json
-  def show
-  end
+  def show; end
 
   # GET /oauth_sessions/new
   def new
@@ -17,8 +16,7 @@ class OauthSessionsController < ApplicationController
   end
 
   # GET /oauth_sessions/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /oauth_sessions or /oauth_sessions.json
   def create

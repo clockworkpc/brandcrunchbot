@@ -1,23 +1,24 @@
 # Use the Ruby base image
-FROM ruby:latest
+FROM ruby:3.4.4
 
-# Set the working directory inside the container
+# Install dependencies needed for Rails
+RUN apt-get update -qq && apt-get install -y \
+  nodejs \
+  postgresql-client
+
+# Set working directory inside container
 WORKDIR /rails
 
-# Install dependencies needed for Rails (optional)
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+# Copy entrypoint script
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
 
-# Copy Gemfile and Gemfile.lock to the container
-COPY Gemfile Gemfile.lock ./
+# Set entrypoint
+ENTRYPOINT ["entrypoint.sh"]
 
-# Install Bundler and gems
-RUN gem install bundler:2.5.18 && bundle install
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose port 3000 for the Rails server
+# Expose port for Rails server
 EXPOSE 3000
 
-# Run the Rails server
+# Default command
 CMD ["bash", "-c", "bundle exec rails server -b 0.0.0.0"]
+

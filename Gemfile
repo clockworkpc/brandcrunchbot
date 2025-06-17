@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.3.5'
-
 gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', require: false
 gem 'colorize'
@@ -38,7 +36,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development, :test do
   # gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  gem 'clipboard'
+  gem 'clipboard', require: false
   gem 'database_cleaner'
   gem 'database_cleaner-active_record'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
@@ -59,7 +57,9 @@ group :development, :test do
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
+  gem 'ruby-lsp'
   gem 'shoulda-matchers'
+  gem 'timecop'
 end
 
 group :development do

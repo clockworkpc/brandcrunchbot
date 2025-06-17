@@ -5,21 +5,28 @@ class BuyItNowBot < ApplicationJob
     @gda ||= GodaddyApi.new
   end
 
+  # app/jobs/buy_it_now_bot.rb
   def parse_instant_purchase_response(response)
     return { 'Result' => 'Failure' } if response.is_a?(Hash) && response[:ok] == false
 
     doc = Nokogiri::XML(response.body)
-    Rails.logger.info(response.body)
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
     }
-    response_node = doc.xpath('//ns:EstimateCloseoutDomainPriceResult', namespaces)
-    xml_fragment = response_node.first.children.first.text
 
-    Nokogiri::XML(xml_fragment)
-            .xpath('//InstantPurchaseCloseoutDomain')
-            .first.to_h
+    # grab the CDATA-wrapped fragment
+    result_node = doc.at_xpath('//ns:EstimateCloseoutDomainPriceResult/Result', namespaces)
+    xml_fragment = result_node.text
+
+    # parse it into a small Nokogiri doc
+    inner_doc = Nokogiri::XML(xml_fragment)
+    ip_node   = inner_doc.at_xpath('//InstantPurchaseCloseoutDomain')
+
+    # build a Hash of its child elements
+    ip_node
+      .elements
+      .each_with_object({}) { |child, h| h[child.name] = child.text }
   end
 
   def scheduled_job(auction)
@@ -52,10 +59,14 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
-  def purchase_outright(domain_name:, attempts: 5)
+  def purchase_outright(domain_name:, attempts_per_second: 4, total_attempts: nil, total_seconds: nil)
+    total_attempts ||= attempts_per_second * total_seconds
+    interval = 1.0 / attempts_per_second
+
     result = { valid: true, rescheduled: false, success: false }
-    (0..attempts).to_a.each do |i|
-      sleep 0.25
+
+    total_attempts.times do |i|
+      sleep interval
       Rails.logger.info("Attempt ##{i + 1}")
 
       auction_details = gda.get_auction_details(domain_name:)
@@ -70,11 +81,6 @@ class BuyItNowBot < ApplicationJob
 
       result[:success] = true
       return result
-
-      # if response && response[:result] == 'Success'
-      #   result[:success] = true
-      #   return result
-      # end
     end
 
     result[:valid] = false
@@ -84,7 +90,7 @@ class BuyItNowBot < ApplicationJob
   def count_down_until(domain_name:, auction_end_time:, secs_f:)
     while Time.now.utc < auction_end_time.utc
       remaining_time = auction_end_time - Time.now.utc
-      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds" # rubocop:disable Metrics/LineLength
+      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds"
       Rails.logger.info(text.yellow)
       sleep_time = [remaining_time, secs_f].min
       sleep(sleep_time)
@@ -118,8 +124,8 @@ class BuyItNowBot < ApplicationJob
 
     # Make up to 5 rapid attempts to purchase
     # End job if purchase attempt completed, be it successful or not
-    attempts = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
-    result = purchase_outright(domain_name:, attempts:)
+    attempts_per_second = ENV.fetch('BUY_IT_NOW_ATTEMPTS', 5).to_i
+    result = purchase_outright(domain_name:, attempts_per_second:)
     return if result[:success] == true
 
     sleep 1
@@ -128,6 +134,6 @@ class BuyItNowBot < ApplicationJob
     second_check = check_auction(auction_details: second_auction_details)
     return unless second_check[:valid]
 
-    purchase_outright(domain_name:, attempts: 2)
+    purchase_outright(domain_name:, attempts_per_second: 2)
   end
 end

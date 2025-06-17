@@ -10,7 +10,7 @@ class ProcessDomainsJob < ApplicationJob
       auction_details = ga.get_auction_details(domain_name:)
       auction_end_time_str = auction_details['AuctionEndTime']
       auction_end_time = DateTime.parse(auction_end_time_str)
-      schedule_job(auction_end_time, domain_name, s_bid_amount)
+      schedule_job(auction_end_time, domain_name)
     end
   end
 

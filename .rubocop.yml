@@ -1,64 +1,54 @@
 require:
   - rubocop-performance
   - rubocop-rails
+  - rubocop-rspec
+  - ./rubocop/cop/style/redundant_keyword.rb
 
 AllCops:
-  Exclude:
-    - 'gems/**/*'
-    - 'more-stuff/**/*'
-    - 'db/**/*'
-    - 'doc/**/*'
-    - 'config/**/*'
-    - 'script/**/*'
-    - 'tmp/**/*'
-    - 'lib/ctm/uri/**/*'
-    - 'lib/twilio_ruby_old/**/*'
-    - 'vendor/bundle/**/*' # on CircleCI
-    - 'node_modules/**/*'
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.5
   NewCops: enable
-  SuggestExtensions: false
+  SuggestExtensions: true
 
 Layout/ArgumentAlignment:
   Enabled: false
-  Autocorrect: true
+  Autocorrect: false
 
 Layout/LineLength:
-  Enabled: true
-  Autocorrect: true
+  Enabled: false
+  Autocorrect: false
 
 Layout/MultilineMethodCallIndentation:
   Enabled: false
 
 Metrics/AbcSize:
   Enabled: true
-  Autocorrect: true
+  Autocorrect: false
   Max: 30
 
 Metrics/ClassLength:
   Enabled: true
-  Autocorrect: true
+  Autocorrect: false
 
 Metrics/MethodLength:
   Enabled: true
-  Autocorrect: true
+  Autocorrect: false
   Max: 20
 
 Naming/AccessorMethodName:
   Enabled: true
-  Autocorrect: true
+  Autocorrect: false
 
 Style/Documentation:
   Enabled: false
-  Autocorrect: true
+  Autocorrect: false
 
 Style/FrozenStringLiteralComment:
   Enabled: false
-  Autocorrect: true
+  Autocorrect: false
 
 Style/MutableConstant:
   Enabled: false
-  Autocorrect: true
+  Autocorrect: false
 
 Style/NumericPredicate:
   Enabled: true

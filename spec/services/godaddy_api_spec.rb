@@ -1,114 +1,138 @@
 require 'rails_helper'
 
-RSpec.describe GodaddyApi do
-  before(:all) do
-    @service = described_class.new
-  end
+# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations, RSpec/MultipleMemoizedHelpers
+RSpec.describe GodaddyApi, type: :service do
+  let(:api) { described_class.new }
+  let(:https) { instance_double(Net::HTTP) }
+  let(:request) { instance_double(Net::HTTP::Post) }
 
-  let(:auction_details_response) do
-    { 'IsValid' => 'True',
-      'DomainName' => 'alephdigital.com',
-      'AuctionEndTime' => '10/01/2024 10:11 AM (PDT)',
-      'BidCount' => '1',
-      'Price' => '$10',
-      'ValuationPrice' => '$2,017',
-      'Traffic' => '0',
-      'CreateDate' => '08/27/2014',
-      'BidIncrementAmount' => '$5',
-      'AuctionModel' => 'Bid',
-      'AuditDateTime' => '9/30/2024 11:46:45 AM',
-      'IsHighestBidder' => 'False' }.to_json
-  end
+  describe '#get_auction_details_by_domain_name' do
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml').read }
+    let(:response) { instance_double(Net::HTTPResponse, body: xml) }
 
-  let(:successful_instant_purchase) do
-    { 'Result' => 'Success',
-      'Domain' => 'joinidentity.com',
-      'Price' => '$11.00',
-      'RenewalPrice' => '$10.99',
-      'PrivateRegistration' => 'N/A',
-      'ICANNFee' => '$0.18',
-      'Taxes' => '$0.00',
-      'Total' => '$22.17',
-      'OrderID' => '3334609888' }
-  end
-  # describe '#get_auction_details' do
-  #   it 'parses the auction details correctly' do
-  #     domain_name = 'gourmetbunny.com'
-  #
-  #     # Stub the SOAP request
-  #     stub_request(:post, 'https://example.com/soap_endpoint') # Replace with actual SOAP endpoint
-  #       .with(body: /GetAuctionDetails/) # Match the SOAP action name
-  #       .to_return(status: 200, body: auction_details_response, headers: {})
-  #
-  #     # Create an instance of the service and call the method
-  #     service = described_class.new
-  #     result = service.get_auction_details(domain_name:)
-  #
-  #     # Expect the parsed result to match the auction details
-  #     expect(result).to eq(JSON.parse(auction_details_response))
-  #   end
-  # end
-
-  describe 'Domain Info' do
-    it 'GetAuctionDetailsByDomainName' do
-      domain_name = 'gourmetbunny.com'
-      res = @service.get_auction_details_by_domain_name(domain_name:)
-      expect(res).to eq(auction_details)
+    before do
+      allow(api).to receive(:new_soap_request)
+        .with(soap_action_name: 'GetAuctionDetailsByDomainName', basename: 'get_auction_details_by_domain_name', kwargs: { domain_name: 'example.com' })
+        .and_return([https, request])
+      allow(https).to receive(:request).with(request).and_return(response)
     end
 
-    it 'GetAuctionDetails', focus: false do
-      domain_name = 'alephdigital.com'
-      # allow(@service)
-      #   .to receive(:get_auction_details)
-      #   .with(domain_name:)
-      #   .and_return(auction_details)
-      #
-      # Invoke the method
-      res = @service.get_auction_details(domain_name:)
-      require 'pry'; binding.pry
-
-      # Expect the response to match the stubbed auction details
-      expect(res).to eq(auction_details)
+    it 'returns a hash with the auction details attributes' do
+      result = api.get_auction_details_by_domain_name(domain_name: 'example.com')
+      expect(result).to include('DomainName' => 'example.com', 'IsValid' => 'True')
     end
   end
 
-  describe 'Auction List' do
-    it 'GetAuctionList', focus: false do
-      page_number = 1
-      rows_per_page = 100
-      begins_with_keyword = 'ubi'
-      res = @service.get_auction_list(page_number:, rows_per_page:, begins_with_keyword:)
-      pp res
+  describe '#get_auction_details' do
+    let(:domain_name) { 'example.com' }
+    let(:xml) do
+      Rails.root.join('spec/fixtures/godaddy/get_auction_details_success.xml').read.gsub('example.com', domain_name)
+    end
+    let(:response) { instance_double(Net::HTTPResponse, body: xml) }
+
+    before do
+      allow(api).to receive(:new_soap_request)
+        .with(soap_action_name: 'GetAuctionDetails', basename: 'get_auction_details', kwargs: { domain_name: domain_name })
+        .and_return([https, request])
+      allow(https).to receive(:request).with(request).and_return(response)
+      allow(Rails.logger).to receive(:info)
+    end
+
+    it 'logs and returns the parsed auction details' do
+      result = api.get_auction_details(domain_name: domain_name)
+      expect(Rails.logger).to have_received(:info).with(kind_of(Hash))
+      expect(result).to include('DomainName' => domain_name)
     end
   end
 
-  describe 'Place Bid or Purchase' do
-    it 'places a bid on or purchases a domain', focus: false do
-      domain_name = '19ventures.com'
-      s_bid_amount = 5
+  describe '#estimate_closeout_domain_price' do
+    let(:xml) do
+      Rails.root.join('spec/fixtures/godaddy/estimate_closeout_domain_price_success.xml').read
+        .gsub('example.com', 'bar.com')
+    end
+    let(:response) { instance_double(Net::HTTPResponse, body: xml, code: '200') }
 
-      details = @service.get_auction_details(domain_name:)
+    before do
+      allow(api).to receive(:new_soap_request)
+        .with(soap_action_name: 'EstimateCloseoutDomainPrice', basename: 'estimate_closeout_domain_price', kwargs: { domain_name: 'bar.com', add_privacy: false })
+        .and_return([https, request])
+      allow(https).to receive(:request).with(request).and_return(response)
+      allow(Rails.logger).to receive(:info)
+    end
 
-      res = @service.place_bid_or_purchase(domain_name:, s_bid_amount:)
-      pp res
+    it 'returns a symbol-keyed hash with expected fields' do
+      result = api.estimate_closeout_domain_price(domain_name: 'bar.com')
+      expect(result).to include(
+        result: 'Success',
+        domain: 'bar.com',
+        price: a_kind_of(Integer),
+        closeout_domain_price_key: a_kind_of(String)
+      )
+    end
+
+    it 'returns nil if response code is not 200' do
+      allow(response).to receive(:code).and_return('500')
+      expect(api.estimate_closeout_domain_price(domain_name: 'bar.com')).to eq({})
     end
   end
 
-  describe 'Purchasing at Buy It Now price' do
-    it 'gets the key from EstimateCloseoutDomainPrice' do
-      domain_name = 'wincademy.com'
-      # expect { @service.estimate_closeout_domain_price(domain_name:) }.not_to raise_error
-      res = @service.estimate_closeout_domain_price(domain_name:)
-      key = res[:closeout_domain_price_key]
-      expect(key).to match(/[a-zA-Z0-9]/)
-      expect(key.length).to eq(168)
+  describe '#get_auction_list' do
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml').read }
+    let(:response) { instance_double(Net::HTTPResponse, body: xml) }
+
+    before do
+      allow(api).to receive(:new_soap_request)
+        .with(soap_action_name: 'GetAuctionList', basename: 'get_auction_list', kwargs: { page_number: 1, rows_per_page: 5, begins_with_keyword: 'ex' })
+        .and_return([https, request])
+      allow(https).to receive(:request).with(request).and_return(response)
     end
 
-    it 'gets the key from the EstimateCloseoutDomainPrice and purchases the domain' do
-      domain_name = 'wincademy.com'
-      cdpr = @service.estimate_closeout_domain_price(domain_name:)
-      closeout_domain_price_key = cdpr[:closeout_domain_price_key]
-      res = @service.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
+    it 'returns an array of auction hashes with symbol keys' do
+      list = api.get_auction_list(page_number: 1, rows_per_page: 5, begins_with_keyword: 'ex')
+      expect(list).to be_an(Array)
+      expect(list.first).to have_key(:domain_name)
+      expect(list.first[:price]).to be_a(Integer)
+    end
+  end
+
+  describe '#place_bid_or_purchase' do
+    let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml').read }
+    let(:response) { instance_double(Net::HTTPResponse, body: xml) }
+
+    before do
+      allow(api).to receive(:new_soap_request)
+        .with(soap_action_name: 'PlaceBidOrPurchase', basename: 'place_bid_or_purchase', kwargs: hash_including(domain_name: 'baz.com', s_bid_amount: '10'))
+        .and_return([https, request])
+      allow(https).to receive(:request).with(request).and_return(response)
+    end
+
+    it 'parses and returns the auction list response' do
+      result = api.place_bid_or_purchase(domain_name: 'baz.com', s_bid_amount: '10')
+      expect(result).to be_an(Array)
+      expect(result.first).to include(:domain_name)
+    end
+  end
+
+  describe '#purchase_instantly' do
+    let(:inst_resp) { instance_double(Net::HTTPResponse, body: 'purchased') }
+
+    before do
+      allow(api).to receive(:estimate_closeout_domain_price)
+        .with(domain_name: 'qux.com').and_return(closeout_domain_price_key: 'KEY123')
+      allow(api).to receive(:instant_purchase_closeout_domain)
+        .with(domain_name: 'qux.com', closeout_domain_price_key: 'KEY123').and_return(inst_resp)
+    end
+
+    it 'returns ok: false when no key present' do
+      allow(api).to receive(:estimate_closeout_domain_price).and_return({})
+      result = api.purchase_instantly(domain_name: 'qux.com')
+      expect(result).to eq(ok: false)
+    end
+
+    it 'delegates to instant_purchase_closeout_domain when key present' do
+      result = api.purchase_instantly(domain_name: 'qux.com')
+      expect(result).to eq(inst_resp)
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations, RSpec/MultipleMemoizedHelpers

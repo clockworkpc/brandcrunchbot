@@ -3,13 +3,12 @@ class GodaddyController < ApplicationController
 
   # TODO: Schedule job in response to webhook
   def google_sheet
-    data = params[:godaddy] || params
-    raw_changes = data[:changes] || {}
-    changes = raw_changes.values
+    permitted_params = godaddy_params.to_h
+    changes = permitted_params[:changes]&.values || []
     service = BuyItNowBotScheduler.new
     service.call(changes:)
     render json: { message: 'Data received successfully' }, status: :ok
-  rescue ActionController::UnfilteredParameters => e
+  rescue ActionController::ParameterMissing, ActionController::UnfilteredParameters => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
 

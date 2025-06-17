@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="GdAuctionsBiddingWSAPI_v2">
+  <soap:Body>
+    <ns:GetAuctionListResponse>
+      <ns:GetAuctionListResult>
+        <![CDATA[
+          <AuctionList IsValid="True" TotalRecords="1">
+            <Auction DomainName="example.com" Price="25" AuctionEndTime="05/26/2025 02:05 PM (PDT)" />
+          </AuctionList>
+        ]]>
+      </ns:GetAuctionListResult>
+    </ns:GetAuctionListResponse>
+  </soap:Body>
+</soap:Envelope>
+

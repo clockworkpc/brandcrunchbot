@@ -13,7 +13,7 @@ class ApiRateLimiter
   end
 
   # This method tracks API calls and ensures rate limiting
-  def limit_rate(api_method, **kwargs)
+  def limit_rate(api_method, **)
     key = 'godaddy_api_calls'
     current_count = @redis.get(key).to_i
 
@@ -24,14 +24,14 @@ class ApiRateLimiter
       end
 
       # Pass keyword arguments when calling the method
-      api_method.call(**kwargs)
+      api_method.call(**)
     else
       sleep_time = @redis.ttl(key)
       Rails.logger.info "Rate limit exceeded. Sleeping for #{sleep_time} seconds..."
       sleep(sleep_time)
 
       # Retry with the same arguments
-      limit_rate(api_method, **kwargs)
+      limit_rate(api_method, **)
     end
   end
 end
