@@ -10,6 +10,8 @@ if [ ! -d "$PROJECT_DIR" ]; then
   exit 1
 fi
 
+cd "$PROJECT_DIR"
+
 # Attach if session exists
 if tmux has-session -t "$SESSION" 2>/dev/null; then
   exec tmux attach -t "$SESSION"
