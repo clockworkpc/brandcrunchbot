@@ -59,7 +59,8 @@ class BuyItNowBot < ApplicationJob
     result
   end
 
-  def purchase_outright(domain_name:, attempts_per_second: 4, total_attempts: nil, total_seconds: nil)
+  def purchase_outright(domain_name:, attempts_per_second: 4, total_attempts: nil, total_seconds: 5)
+    total_seconds ||= 5
     total_attempts ||= attempts_per_second * total_seconds
     interval = 1.0 / attempts_per_second
 
