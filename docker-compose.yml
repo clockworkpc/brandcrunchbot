@@ -22,6 +22,7 @@ services:
       - GID=1000
       - BUY_IT_NOW_COUNTER=10
       - BUY_IT_NOW_SLEEP=0.5
+      - GODADDY_API_URL=http://fake-godaddy:4567
     ports:
       - "3000:3000"
     depends_on:
@@ -52,6 +53,14 @@ services:
       - brandcrunchbot_network
     ports:
       - "6379:6379"
+
+  fake-godaddy:
+    build:
+      context: ./fake_godaddy_server
+    ports:
+      - "4567:4567"
+    environment:
+      SIMULATED_AVAILABILITY_DELAY: 120  # 2 minutes
 
 networks:
   brandcrunchbot_network:

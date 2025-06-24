@@ -568,6 +568,7 @@ DEPENDENCIES
   rubocop-rspec
   ruby-lsp
   shoulda-matchers
+  sinatra
   sprockets-rails
   stimulus-rails
   thor
