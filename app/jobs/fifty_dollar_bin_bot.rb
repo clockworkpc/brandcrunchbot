@@ -36,9 +36,15 @@ class FiftyDollarBinBot < ApplicationJob
     domain_node.attributes.transform_values(&:value)
   end
 
+  def stop_requested?(domain_name)
+    Rails.cache.read("stop_bot:#{domain_name}") == true
+  end
+
   def attempt_purchase(domain_name)
     puts "MAX_ATTEMPTS = #{MAX_ATTEMPTS}"
     MAX_ATTEMPTS.times do |i|
+      break if stop_requested?(domain_name)
+
       sleep INTERVAL
       Rails.logger.info("[$50 BIN] Attempt ##{i + 1} for #{domain_name}")
 

@@ -16,10 +16,10 @@ class BuyItNowBotScheduler
       bin_price = hsh['bin_price']
 
       auction = if Auction.exists?(domain_name:)
-                  Auction.find_by(domain_name:)
-                else
-                  Auction.create(domain_name:, bin_price:)
-                end
+        Auction.find_by(domain_name:)
+      else
+        Auction.create(domain_name:, bin_price:)
+      end
       auction.update(bin_price:, active: true)
     end
   end
@@ -66,10 +66,10 @@ class BuyItNowBotScheduler
     Rails.logger.info(auction_end_time.class)
     Rails.logger.info(auction_end_time.to_s.green)
     Rails.logger.info((auction_end_time - 10).to_s.green)
-  if auction.bin_price < 50
-    BuyItNowBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
-  else
-    FiftyDollarBinBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
+    if auction.bin_price < 50
+      BuyItNowBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
+    else
+      FiftyDollarBinBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
     end
   end
 
