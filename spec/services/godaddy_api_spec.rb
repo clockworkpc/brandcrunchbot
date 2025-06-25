@@ -97,7 +97,7 @@ RSpec.describe GodaddyApi, type: :service do
 
   describe '#place_bid_or_purchase' do
     let(:xml) { Rails.root.join('spec/fixtures/godaddy/get_auction_list_success.xml').read }
-    let(:response) { instance_double(Net::HTTPResponse, body: xml) }
+    let(:response) { instance_double(Net::HTTPResponse, body: xml, code: '200') }
 
     before do
       allow(api).to receive(:new_soap_request)
