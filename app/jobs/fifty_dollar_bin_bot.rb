@@ -97,8 +97,8 @@ class FiftyDollarBinBot < ApplicationJob
 
 
     # Check whether still a valid Auction
-    still_valid = preliminary_validation(domain_name:, auction_end_time:)
-    return unless still_valid 
+    # still_valid = preliminary_validation(domain_name:, auction_end_time:)
+    # return unless still_valid 
 
     if attempt_purchase(domain_name)
       Rails.logger.info("[$50 BIN] Purchase SUCCESS for #{domain_name}")
