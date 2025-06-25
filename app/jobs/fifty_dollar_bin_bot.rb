@@ -61,9 +61,44 @@ class FiftyDollarBinBot < ApplicationJob
     false
   end
 
-  def perform(auction)
+  def count_down_until(domain_name:, auction_end_time:, secs_f:)
+    while Time.now.utc < auction_end_time.utc
+      remaining_time = auction_end_time - Time.now.utc
+      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds"
+      Rails.logger.info(text.yellow)
+      sleep_time = [remaining_time, secs_f].min
+      sleep(sleep_time)
+    end
+    true
+  end
+
+  def preliminary_validation(domain_name:, auction_end_time: nil)
+    auction_details = gda.get_auction_details(domain_name:)
+    datetime_str = auction_details['AuctionEndTime']
+    auction_end_time = Utils.convert_to_utc(datetime_str:) if auction_end_time.nil?
+    Rails.logger.info("Validating auction for #{domain_name}")
+    initial_check = check_auction(auction_details:)
+    return false if initial_check[:valid] == false
+
+    Rails.logger.info("Auction validated for #{domain_name}")
+    countdown_delay = ENV.fetch('BUY_IT_NOW_BOT_DELAY', 0.4).to_f
+
+    # Count down until 0.25 seconds after the Auction ends
+    count_down_until(
+      domain_name:,
+      auction_end_time: auction_end_time + countdown_delay,
+      secs_f: ENV.fetch('BUY_IT_NOW_SLEEP', 1).to_f
+    )
+  end
+
+  def perform(auction, auction_end_time = nil)
     domain_name = auction.domain_name
     Rails.logger.info("[$50 BIN] Starting monitoring for #{domain_name}")
+
+
+    # Check whether still a valid Auction
+    still_valid = preliminary_validation(domain_name:, auction_end_time:)
+    return unless still_valid 
 
     if attempt_purchase(domain_name)
       Rails.logger.info("[$50 BIN] Purchase SUCCESS for #{domain_name}")
