@@ -166,7 +166,7 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
   end
 
   describe '#schedule_buy_it_now_bot' do
-    let(:auction) { instance_double(Auction, auction_end_time: DateTime.new(2025, 6, 11, 12, 0, 0)) }
+    let(:auction) { instance_double(Auction, auction_end_time: DateTime.new(2025, 6, 11, 12, 0, 0), bin_price: 49) }
     let(:job_proxy_double) { double('JobProxy', perform_later: true) }
 
     before do
@@ -181,8 +181,25 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
       expect(BuyItNowBot).to have_received(:set).with(wait_until: auction_time - 10.seconds)
       expect(job_proxy_double).to have_received(:perform_later).with(auction, auction_time)
     end
-  end
+  end 
 
+  describe '#schedule_fifty_dollar_bin_bot' do
+    let(:auction) { instance_double(Auction, auction_end_time: DateTime.new(2025, 6, 11, 12, 0, 0), bin_price: 50) }
+    let(:job_proxy_double) { double('JobProxy', perform_later: true) }
+
+    before do
+      allow(FiftyDollarBinBot).to receive(:set).and_return(job_proxy_double)
+    end
+
+    it 'schedules the BuyItNowBot to run 10 seconds before end time' do
+      auction_time = auction.auction_end_time
+
+      scheduler.schedule_buy_it_now_bot(auction: auction, auction_end_time: auction_time)
+
+      expect(FiftyDollarBinBot).to have_received(:set).with(wait_until: auction_time - 10.seconds)
+      expect(job_proxy_double).to have_received(:perform_later).with(auction, auction_time)
+    end
+  end
   describe '#schedule_job' do
     subject(:scheduler) { described_class.new }
 

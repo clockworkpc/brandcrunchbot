@@ -27,6 +27,22 @@ class GodaddyApi
     auction_details
   end
 
+  def estimate_closeout_domain_price_result(root)
+    extract_attribute = ->(key) { root[key] }
+
+    {
+      result: extract_attribute['Result'],
+      domain: extract_attribute['Domain'],
+      price: extract_attribute['Price']&.to_i,
+      renewal_price: extract_attribute['RenewalPrice'],
+      icann_fee: extract_attribute['ICANNFee'],
+      taxes: extract_attribute['Taxes'],
+      private_registration: extract_attribute['PrivateRegistration'],
+      total: extract_attribute['Total'],
+      closeout_domain_price_key: extract_attribute['closeoutDomainPriceKey']
+    }
+  end
+
   def parse_estimate_closeout_domain_price(response)
     namespaces = {
       'soap' => 'http://www.w3.org/2003/05/soap-envelope',
@@ -44,20 +60,7 @@ class GodaddyApi
     root = parsed.root
     return {} unless root && root.name == 'EstimateCloseoutDomainPrice'
 
-    extract_attribute = ->(key) { root[key] }
-
-    result = {
-      result: extract_attribute['Result'],
-      domain: extract_attribute['Domain'],
-      price: extract_attribute['Price']&.to_i,
-      renewal_price: extract_attribute['RenewalPrice'],
-      icann_fee: extract_attribute['ICANNFee'],
-      taxes: extract_attribute['Taxes'],
-      private_registration: extract_attribute['PrivateRegistration'],
-      total: extract_attribute['Total'],
-      closeout_domain_price_key: extract_attribute['closeoutDomainPriceKey']
-    }
-
+    result = estimate_closeout_domain_price_result(root)
     Rails.logger.info("Closeout Key: #{result[:closeout_domain_price_key]}")
     result
   end
@@ -95,9 +98,12 @@ class GodaddyApi
   end
 
   def new_soap_request(soap_action_name:, basename:, kwargs:)
-    url = URI('https://auctions.godaddy.com/gdAuctionsWSAPI/gdAuctionsBiddingWS_v2.asmx')
+    url_str = 'https://auctions.godaddy.com/gdAuctionsWSAPI/gdAuctionsBiddingWS_v2.asmx'
+    url = URI(ENV.fetch('GODADDY_API_URL', url_str))
+    Rails.logger.info("SOAP Request to #{url}:")
+    # url = URI(url_str)
     https = Net::HTTP.new(url.host, url.port)
-    https.use_ssl = true
+    https.use_ssl = url.scheme == 'https'
 
     soap_action = "#{@base_url}/#{soap_action_name}"
     prod_key = Rails.application.credentials[:prod_key]
@@ -108,6 +114,7 @@ class GodaddyApi
     request['SOAPAction'] = soap_action
     request['Authorization'] = "sso-key #{prod_key}:#{prod_secret}"
     request.body = request_body(basename:, kwargs:)
+    Rails.logger.info(request.body)
     [https, request]
   end
 
@@ -167,6 +174,8 @@ class GodaddyApi
 
     https, request = new_soap_request(soap_action_name:, basename:, kwargs:)
     response = https.request(request)
+    Rails.logger.info("Response Code: #{response.code}")
+    Rails.logger.info("Response Body:\n#{response.body}")
     parse_auction_list(response)
   end
 

@@ -66,7 +66,11 @@ class BuyItNowBotScheduler
     Rails.logger.info(auction_end_time.class)
     Rails.logger.info(auction_end_time.to_s.green)
     Rails.logger.info((auction_end_time - 10).to_s.green)
+  if auction.bin_price < 50
     BuyItNowBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
+  else
+    FiftyDollarBinBot.set(wait_until: auction_end_time - 10.seconds).perform_later(auction, auction_end_time)
+    end
   end
 
   def schedule_job(auction:)

@@ -6,27 +6,31 @@ class BuyItNowBot < ApplicationJob
   end
 
   # app/jobs/buy_it_now_bot.rb
+
   def parse_instant_purchase_response(response)
     return { 'Result' => 'Failure' } if response.is_a?(Hash) && response[:ok] == false
 
-    doc = Nokogiri::XML(response.body)
-    namespaces = {
-      'soap' => 'http://www.w3.org/2003/05/soap-envelope',
-      'ns' => 'GdAuctionsBiddingWSAPI_v2'
-    }
+    begin
+      doc = Nokogiri::XML(response.body)
+      namespaces = {
+        'soap' => 'http://www.w3.org/2003/05/soap-envelope',
+        'ns' => 'GdAuctionsBiddingWSAPI_v2'
+      }
 
-    # grab the CDATA-wrapped fragment
-    result_node = doc.at_xpath('//ns:EstimateCloseoutDomainPriceResult/Result', namespaces)
-    xml_fragment = result_node.text
+      result_node = doc.at_xpath('//ns:EstimateCloseoutDomainPriceResult/Result', namespaces)
+      return { 'Result' => 'Failure' } unless result_node
 
-    # parse it into a small Nokogiri doc
-    inner_doc = Nokogiri::XML(xml_fragment)
-    ip_node   = inner_doc.at_xpath('//InstantPurchaseCloseoutDomain')
+      cdata = result_node.text
+      inner_doc = Nokogiri::XML(cdata)
+      purchase_node = inner_doc.at_xpath('//InstantPurchaseCloseoutDomain')
+      return { 'Result' => 'Failure' } unless purchase_node
 
-    # build a Hash of its child elements
-    ip_node
-      .elements
-      .each_with_object({}) { |child, h| h[child.name] = child.text }
+      purchase_node
+        .elements
+        .each_with_object({}) { |child, hash| hash[child.name] = child.text }
+    rescue StandardError => e
+      { 'Result' => 'Failure', 'Error' => e.message }
+    end
   end
 
   def scheduled_job(auction)
@@ -60,7 +64,6 @@ class BuyItNowBot < ApplicationJob
   end
 
   def purchase_outright(domain_name:, attempts_per_second: 4, total_attempts: nil, total_seconds: 5)
-    total_seconds ||= 5
     total_attempts ||= attempts_per_second * total_seconds
     interval = 1.0 / attempts_per_second
 

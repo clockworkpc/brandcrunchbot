@@ -53,3 +53,7 @@ Style/MutableConstant:
 Style/NumericPredicate:
   Enabled: true
   Autocorrect: true
+
+Rails/TimeZone:
+  Enabled: true
+  Exclude: 'fake_godaddy_server/**/*.rb'

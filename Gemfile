@@ -59,6 +59,7 @@ group :development, :test do
   gem 'rubocop-rspec', require: false
   gem 'ruby-lsp'
   gem 'shoulda-matchers'
+  gem 'sinatra', require: false
   gem 'timecop'
 end
 
