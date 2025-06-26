@@ -313,4 +313,9 @@ class Utils # rubocop:disable Metrics/ClassLength
     end
     Rails.logger.info(Time.now.utc)
   end
+
+  def self.delete_scheduled_job(domain_name:)
+    job = Delayed::Job.all.find { |job| Utils.extract_domain_name_from_scheduled_job(job) == domain_name }
+    job&.destroy!
+  end
 end

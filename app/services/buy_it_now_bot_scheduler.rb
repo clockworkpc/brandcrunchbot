@@ -16,10 +16,10 @@ class BuyItNowBotScheduler
       bin_price = hsh['bin_price']
 
       auction = if Auction.exists?(domain_name:)
-        Auction.find_by(domain_name:)
-      else
-        Auction.create(domain_name:, bin_price:)
-      end
+                  Auction.find_by(domain_name:)
+                else
+                  Auction.create(domain_name:, bin_price:)
+                end
       auction.update(bin_price:, active: true)
     end
   end
