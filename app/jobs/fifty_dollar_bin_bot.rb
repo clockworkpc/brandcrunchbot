@@ -9,6 +9,7 @@ class FiftyDollarBinBot < ApplicationJob
   end
 
   def check_auction(auction_details:)
+    Rails.logger.info("Auction details: #{auction_details.inspect}")
     result = { valid: true }
 
     result[:valid] = false if auction_details['IsValid'] == 'False' || auction_details['Price'].nil?
@@ -41,7 +42,7 @@ class FiftyDollarBinBot < ApplicationJob
   end
 
   def attempt_purchase(domain_name)
-    puts "MAX_ATTEMPTS = #{MAX_ATTEMPTS}"
+    Rails.logger.info("MAX_ATTEMPTS = #{MAX_ATTEMPTS}")
     MAX_ATTEMPTS.times do |i|
       break if stop_requested?(domain_name)
 
@@ -53,12 +54,16 @@ class FiftyDollarBinBot < ApplicationJob
       next unless check[:valid]
 
       cdpr = gda.estimate_closeout_domain_price(domain_name:)
+      Rails.logger.info("[$50 BIN] Estimated closeout domain price response: #{cdpr.inspect}")
       next unless cdpr.is_a?(Hash) && cdpr[:result] == 'Success'
 
       key = cdpr[:closeout_domain_price_key]
+      Rails.logger.info("[$50 BIN] Closeout domain price key: #{key}")
       response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key: key)
+      Rails.logger.info("[$50 BIN] Instant purchase response: #{response.inspect}")
 
       parsed = parse_instant_purchase_response(response)
+      Rails.logger.info("[$50 BIN] Instant purchase response: #{parsed.inspect}")
       return true if parsed['Result'] == 'Success'
 
       Rails.logger.info("[$50 BIN] Purchase attempt failed for #{domain_name}")
@@ -97,14 +102,13 @@ class FiftyDollarBinBot < ApplicationJob
     )
   end
 
-  def perform(auction, auction_end_time = nil)
+  def perform(auction, _auction_end_time = nil)
     domain_name = auction.domain_name
     Rails.logger.info("[$50 BIN] Starting monitoring for #{domain_name}")
 
-
     # Check whether still a valid Auction
     # still_valid = preliminary_validation(domain_name:, auction_end_time:)
-    # return unless still_valid 
+    # return unless still_valid
 
     if attempt_purchase(domain_name)
       Rails.logger.info("[$50 BIN] Purchase SUCCESS for #{domain_name}")

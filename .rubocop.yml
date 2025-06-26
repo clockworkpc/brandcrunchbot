@@ -1,13 +1,15 @@
-require:
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: true
+
+plugins:
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
-  - ./rubocop/cop/style/redundant_keyword.rb
 
-AllCops:
-  TargetRubyVersion: 3.5
-  NewCops: enable
-  SuggestExtensions: true
+require:
+  - ./rubocop/cop/style/redundant_keyword.rb
 
 Layout/ArgumentAlignment:
   Enabled: false
@@ -56,4 +58,5 @@ Style/NumericPredicate:
 
 Rails/TimeZone:
   Enabled: true
-  Exclude: 'fake_godaddy_server/**/*.rb'
+  Exclude: 
+    - 'fake_godaddy_server/**/*.rb'
