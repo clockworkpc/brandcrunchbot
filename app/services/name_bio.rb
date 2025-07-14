@@ -5,8 +5,9 @@ require 'json'
 class NameBio
   API_KEY = Rails.application.credentials.name_bio.api_key
   API_EMAIL = Rails.application.credentials.name_bio.api_email
-  URL_CHECK_DOMAIN = 'https://api.namebio.com/checkdomain/'
-  URL_COMPS = 'https://api.namebio.com/comps/'
+  BASE_URL = 'https://api.namebio.com'
+  URL_CHECK_DOMAIN = "#{BASE_URL}/checkdomain/"
+  URL_COMPS = "#{BASE_URL}/comps/"
 
   attr_writer :rate_limit_delay
 
@@ -14,20 +15,44 @@ class NameBio
     @rate_limit_delay = rate_limit_delay
   end
 
-  def send_request(domain:, api_url:)
-    raise ArgumentError, 'Domain cannot be nil or empty' if domain.blank?
+  def send_request(url:, url_params: {})
+    raise ArgumentError, 'URL cannot be nil or empty' if url.blank?
 
-    uri = URI(api_url)
+    uri = URI(url)
+
+    # Include everything in the POST body, not in the query string
     request = Net::HTTP::Post.new(uri)
-    request.set_form_data(email: API_EMAIL, key: API_KEY, domain:)
+    request.set_form_data({ email: API_EMAIL, key: API_KEY }.merge(url_params))
 
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
       http.request(request)
     end
 
-    binding.irb
+    parse_response(response, url_params[:domain])
+  end
 
-    parse_response(response, domain)
+  def send_comps_request(domain:, order_by: 'price', order_dir: 'desc', monthsold: 60, match_sld_any_tld: false)
+    raise ArgumentError, 'Domain cannot be nil or empty' if domain.blank?
+
+    url = URL_COMPS
+    url_params = {
+      domain:,
+      order_by:,
+      order_dir:,
+      monthsold:,
+      match_sld_any_tld:
+    }
+
+    send_request(url:, url_params:)
+  end
+
+  def send_check_domain_request(domain:)
+    raise ArgumentError, 'Domain cannot be nil or empty' if domain.blank?
+
+    url = URL_CHECK_DOMAIN
+    url_params = { domain: }
+
+    send_request(url:, url_params:)
   end
 
   def parse_response(response, domain)
