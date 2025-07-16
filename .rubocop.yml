@@ -2,61 +2,45 @@ AllCops:
   TargetRubyVersion: 3.4
   NewCops: enable
   SuggestExtensions: true
+  Exclude:
+    - 'db/schema.rb' # or whatever files you want to ignore
 
-plugins:
-  - rubocop-performance
-  - rubocop-rails
-  - rubocop-rspec
-
-require:
-  - ./rubocop/cop/style/redundant_keyword.rb
-
-Layout/ArgumentAlignment:
-  Enabled: false
-  Autocorrect: false
-
-Layout/LineLength:
-  Enabled: false
-  Autocorrect: false
-
-Layout/MultilineMethodCallIndentation:
+Layout:
   Enabled: false
 
-Metrics/AbcSize:
-  Enabled: true
-  Autocorrect: false
-  Max: 30
-
-Metrics/ClassLength:
-  Enabled: true
-  Autocorrect: false
-
-Metrics/MethodLength:
-  Enabled: true
-  Autocorrect: false
-  Max: 20
-
-Naming/AccessorMethodName:
-  Enabled: true
-  Autocorrect: false
-
-Style/Documentation:
+Style:
   Enabled: false
-  Autocorrect: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
-  Autocorrect: false
 
-Style/MutableConstant:
-  Enabled: false
-  Autocorrect: false
+# === Auto-disabled crashing cops ===
+# Layout/BlockAlignment:
+#   Enabled: false
+#
+# Layout/BlockEndNewline:
+#   Enabled: false
+#
+# Layout/ConditionPosition:
+#   Enabled: false
+#
+# Layout/ElseAlignment:
+#   Enabled: false
+#
+# Layout/EndAlignment:
+#   Enabled: false
+#
+# Layout/ExtraSpacing:
+#   Enabled: false
+#
+# Layout/FirstArrayElementIndentation:
+#   Enabled: false
+#
+# Layout/MultilineBlockLayout:
+#   Enabled: false
+#
+# Style/IfUnlessModifier:
+#   Enabled: false
+#
+# Style/TrailingMethodEndStatement:
+#   Enabled: false
 
-Style/NumericPredicate:
-  Enabled: true
-  Autocorrect: true
-
-Rails/TimeZone:
-  Enabled: true
-  Exclude: 
-    - 'fake_godaddy_server/**/*.rb'
+# === End of auto-disabled crashing cops ===

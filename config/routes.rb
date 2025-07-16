@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   get '/oauth2callback', to: 'oauth_sessions#create'
   post '/google_sheet', to: 'godaddy#google_sheet'
 
+
+  get 'domains/index'
+  get 'domains/search'
+  get 'domains/results'
+
   # devise_scope :user do
   #   # Redirests signing out users back to sign-in
   #   get 'users', to: 'devise/sessions#new'

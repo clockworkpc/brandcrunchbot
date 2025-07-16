@@ -1,0 +1,4 @@
+# .ruby-lsp.yml
+rubocop:
+  config_path: .rubocop-lsp.yml
+
