@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DomainsController < ApplicationController
   require 'csv'
 
@@ -13,9 +15,9 @@ class DomainsController < ApplicationController
 
     domains.each do |domain|
       if fetch_comps
-        result = @nb.send_comps_request(domain: domain).merge("type" => "comps", "domain" => domain)
+        result = @nb.send_comps_request(domain: domain).merge('type' => 'comps', 'domain' => domain)
       elsif fetch_checkdomain
-        result = @nb.send_check_domain_request(domain: domain).merge("type" => "checkdomain", "domain" => domain)
+        result = @nb.send_check_domain_request(domain: domain).merge('type' => 'checkdomain', 'domain' => domain)
       else
         next
       end
@@ -33,7 +35,7 @@ class DomainsController < ApplicationController
     respond_to do |format|
       format.html # renders results.html.erb
       format.csv do
-        headers['Content-Disposition'] = "attachment; filename=\"namebio_results.csv\""
+        headers['Content-Disposition'] = 'attachment; filename="namebio_results.csv"'
         headers['Content-Type'] ||= 'text/csv'
 
         render plain: generate_csv(@results)
@@ -45,14 +47,15 @@ class DomainsController < ApplicationController
 
   def generate_csv(results)
     CSV.generate(headers: true) do |csv|
-      csv << ["Domain", "Type", "Field", "Value"]
+      csv << %w[Domain Type Field Value]
 
       results.each do |result|
-        domain = result["domain"]
-        type = result["type"]
+        domain = result['domain']
+        type = result['type']
 
         result.each do |key, value|
           next if %w[domain type].include?(key)
+
           if value.is_a?(Array)
             value.each_with_index do |v, i|
               csv << [domain, type, "#{key}[#{i}]", v]
@@ -64,5 +67,6 @@ class DomainsController < ApplicationController
       end
     end
   end
-end
 
+  def foo; end
+end

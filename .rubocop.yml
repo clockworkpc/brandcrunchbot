@@ -1,3 +1,7 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.4
   NewCops: enable
@@ -5,42 +9,3 @@ AllCops:
   Exclude:
     - 'db/schema.rb' # or whatever files you want to ignore
 
-Layout:
-  Enabled: false
-
-Style:
-  Enabled: false
-
-
-# === Auto-disabled crashing cops ===
-# Layout/BlockAlignment:
-#   Enabled: false
-#
-# Layout/BlockEndNewline:
-#   Enabled: false
-#
-# Layout/ConditionPosition:
-#   Enabled: false
-#
-# Layout/ElseAlignment:
-#   Enabled: false
-#
-# Layout/EndAlignment:
-#   Enabled: false
-#
-# Layout/ExtraSpacing:
-#   Enabled: false
-#
-# Layout/FirstArrayElementIndentation:
-#   Enabled: false
-#
-# Layout/MultilineBlockLayout:
-#   Enabled: false
-#
-# Style/IfUnlessModifier:
-#   Enabled: false
-#
-# Style/TrailingMethodEndStatement:
-#   Enabled: false
-
-# === End of auto-disabled crashing cops ===
