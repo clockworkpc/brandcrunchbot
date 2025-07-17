@@ -5,9 +5,9 @@ require 'json'
 class NameBio
   API_KEY = Rails.application.credentials.name_bio.api_key
   API_EMAIL = Rails.application.credentials.name_bio.api_email
-  BASE_URL = 'https://api.namebio.com'
-  URL_CHECK_DOMAIN = "#{BASE_URL}/checkdomain/"
-  URL_COMPS = "#{BASE_URL}/comps/"
+  BASE_URL = 'https://api.namebio.com'.freeze
+  URL_CHECK_DOMAIN = "#{BASE_URL}/checkdomain/".freeze
+  URL_COMPS = "#{BASE_URL}/comps/".freeze
 
   attr_writer :rate_limit_delay
 

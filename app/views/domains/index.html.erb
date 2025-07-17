@@ -1,2 +1,25 @@
-<h1>Domains#index</h1>
-<p>Find me in app/views/domains/index.html.erb</p>
+<h1>Domain Lookup</h1>
+
+<%= form_with url: search_domains_path, method: :post, data: { turbo: false } do %>
+  <div>
+    <label>Request Type:</label><br>
+    <label>
+      <%= radio_button_tag :comps, true, false %>
+      Comps
+    </label>
+    <label>
+      <%= radio_button_tag :checkdomain, true, false %>
+      Check Domain
+    </label>
+  </div>
+
+  <div style="margin-top: 1em;">
+    <label for="domains">Enter domain(s):</label><br>
+    <%= text_area_tag :domains, '', rows: 4, cols: 60, placeholder: "example.com, test.org\nor one per line" %>
+  </div>
+
+  <div style="margin-top: 1em;">
+    <%= submit_tag 'Submit' %>
+  </div>
+<% end %>
+

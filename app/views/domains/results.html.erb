@@ -1,2 +1,80 @@
-<h1>Domains#results</h1>
-<p>Find me in app/views/domains/results.html.erb</p>
+<h1>Domain Lookup Results</h1>
+
+<% if @results.empty? %>
+  <p>No results to display.</p>
+<% else %>
+  <% @results.each_with_index do |result, idx| %>
+    <% domain = result['domain'] %>
+    <% type = result['type'] %>
+
+    <div style="border: 1px solid #ccc; padding: 1em; margin-bottom: 2em;">
+      <h2><%= domain %> <small>(<%= type %>)</small></h2>
+
+      <% result.each do |key, value| %>
+        <% next if %w[domain type].include?(key) %>
+
+        <% if key == 'sales' && value.is_a?(Array) %>
+          <h3>Sales</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Price</th>
+                <th>Date</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% value.each do |sale| %>
+                <tr>
+                  <td><%= sale[0] %></td>
+                  <td><%= sale[1] %></td>
+                  <td><%= sale[2] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+        <% elsif key == 'comps' && value.is_a?(Array) %>
+          <h3>Comparable Sales</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Domain</th>
+                <th>Price</th>
+                <th>Date</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% value.each do |comp| %>
+                <tr>
+                  <td><%= comp[0] %></td>
+                  <td><%= comp[1] %></td>
+                  <td><%= comp[2] %></td>
+                  <td><%= comp[3] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+        <% elsif key == 'attributes' && value.is_a?(Array) %>
+          <h3>Attributes</h3>
+          <ul>
+            <% value.each do |attr| %>
+              <li><%= attr %></li>
+            <% end %>
+          </ul>
+
+        <% else %>
+          <p><strong><%= key.humanize %>:</strong> <%= value %></p>
+        <% end %>
+      <% end %>
+
+    </div>
+  <% end %>
+
+  <p>
+    <%= link_to 'Download CSV', results_domains_path(format: :csv), class: 'button' %>
+  </p>
+<% end %>
+

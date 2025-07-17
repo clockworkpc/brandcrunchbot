@@ -1,6 +1,7 @@
 plugins:
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-erb
 
 AllCops:
   TargetRubyVersion: 3.4
@@ -9,3 +10,12 @@ AllCops:
   Exclude:
     - 'db/schema.rb' # or whatever files you want to ignore
 
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Metrics/MethodLength
+# Metrics/AbcSize
+# Metrics/MethodLength

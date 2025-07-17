@@ -41,6 +41,7 @@ group :development, :test do
   gem 'database_cleaner-active_record'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'dotenv-rails'
+  gem 'erb_lint'
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'guard'
@@ -54,6 +55,7 @@ group :development, :test do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'rubocop', require: false
+  gem 'rubocop-erb', '~> 0.6.0'
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false

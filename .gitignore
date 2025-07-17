@@ -48,3 +48,5 @@ yarn-debug.log*
 
 /bin/restart_dynos.sh
 # server*
+
+domains.csv
