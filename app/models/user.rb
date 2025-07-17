@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
-  after_create :authorize_user, :send_welcome_email
+  after_create :authorize_user
 
   def authorize_user
     authorised_users = JSON.parse(File.read('config/authorized_users.json'))
