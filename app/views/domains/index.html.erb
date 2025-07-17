@@ -1,25 +1,25 @@
-<h1>Domain Lookup</h1>
+<h1 class="text-center">Domain Lookup</h1>
 
-<%= form_with url: search_domains_path, method: :post, data: { turbo: false } do %>
-  <div>
-    <label>Request Type:</label><br>
-    <label>
-      <%= radio_button_tag :comps, true, false %>
-      Comps
-    </label>
-    <label>
-      <%= radio_button_tag :checkdomain, true, false %>
-      Check Domain
-    </label>
+<%= form_with url: search_domains_path, method: :post, data: { turbo: false }, html: { class: 'form-horizontal' } do %>
+  <div class="form-group">
+    <label class="col-form-label">Request Type:</label><br>
+    <div class="form-check">
+      <%= radio_button_tag :comps, true, false, class: 'form-check-input', id: 'comps_radio' %>
+      <label class="form-check-label" for="comps_radio">Comps</label>
+    </div>
+    <div class="form-check">
+      <%= radio_button_tag :checkdomain, true, false, class: 'form-check-input', id: 'checkdomain_radio' %>
+      <label class="form-check-label" for="checkdomain_radio">Check Domain</label>
+    </div>
   </div>
 
-  <div style="margin-top: 1em;">
-    <label for="domains">Enter domain(s):</label><br>
-    <%= text_area_tag :domains, '', rows: 4, cols: 60, placeholder: "example.com, test.org\nor one per line" %>
+  <div class="form-group">
+    <label for="domains" class="col-form-label">Enter domain(s):</label>
+    <%= text_area_tag :domains, '', rows: 4, cols: 60, class: 'form-control', placeholder: "example.com, test.org\nor one per line" %>
   </div>
 
-  <div style="margin-top: 1em;">
-    <%= submit_tag 'Submit' %>
+  <div class="form-group">
+    <%= submit_tag 'Submit', class: 'btn btn-primary' %>
   </div>
 <% end %>
 

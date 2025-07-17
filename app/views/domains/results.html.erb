@@ -1,80 +1,84 @@
-<h1>Domain Lookup Results</h1>
+<h1 class="mb-4">Domain Lookup Results</h1>
 
 <% if @results.empty? %>
-  <p>No results to display.</p>
+  <div class="alert alert-warning" role="alert">
+    No results to display.
+  </div>
 <% else %>
   <% @results.each_with_index do |result, idx| %>
     <% domain = result['domain'] %>
     <% type = result['type'] %>
 
-    <div style="border: 1px solid #ccc; padding: 1em; margin-bottom: 2em;">
-      <h2><%= domain %> <small>(<%= type %>)</small></h2>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2 class="h5 mb-0"><%= domain %> <small class="text-muted">(<%= type %>)</small></h2>
+      </div>
+      <div class="card-body">
+        <% result.each do |key, value| %>
+          <% next if %w[domain type].include?(key) %>
 
-      <% result.each do |key, value| %>
-        <% next if %w[domain type].include?(key) %>
-
-        <% if key == 'sales' && value.is_a?(Array) %>
-          <h3>Sales</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Price</th>
-                <th>Date</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% value.each do |sale| %>
+          <% if key == 'sales' && value.is_a?(Array) %>
+            <h5>Sales</h5>
+            <table class="table table-striped table-bordered table-sm">
+              <thead>
                 <tr>
-                  <td><%= sale[0] %></td>
-                  <td><%= sale[1] %></td>
-                  <td><%= sale[2] %></td>
+                  <th>Price</th>
+                  <th>Date</th>
+                  <th>Source</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% value.each do |sale| %>
+                  <tr>
+                    <td><%= number_to_currency(sale[0]) %></td>
+                    <td><%= sale[1] %></td>
+                    <td><%= sale[2] %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
 
-        <% elsif key == 'comps' && value.is_a?(Array) %>
-          <h3>Comparable Sales</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Domain</th>
-                <th>Price</th>
-                <th>Date</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% value.each do |comp| %>
+          <% elsif key == 'comps' && value.is_a?(Array) %>
+            <h5>Comparable Sales</h5>
+            <table class="table table-striped table-bordered table-sm">
+              <thead>
                 <tr>
-                  <td><%= comp[0] %></td>
-                  <td><%= comp[1] %></td>
-                  <td><%= comp[2] %></td>
-                  <td><%= comp[3] %></td>
+                  <th>Domain</th>
+                  <th>Price</th>
+                  <th>Date</th>
+                  <th>Source</th>
                 </tr>
+              </thead>
+              <tbody>
+                <% value.each do |comp| %>
+                  <tr>
+                    <td><%= comp[0] %></td>
+                    <td><%= comp[1] %></td>
+                    <td><%= comp[2] %></td>
+                    <td><%= comp[3] %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+
+          <% elsif key == 'attributes' && value.is_a?(Array) %>
+            <h5>Attributes</h5>
+            <ul class="list-group mb-3">
+              <% value.each do |attr| %>
+                <li class="list-group-item"><%= attr %></li>
               <% end %>
-            </tbody>
-          </table>
+            </ul>
 
-        <% elsif key == 'attributes' && value.is_a?(Array) %>
-          <h3>Attributes</h3>
-          <ul>
-            <% value.each do |attr| %>
-              <li><%= attr %></li>
-            <% end %>
-          </ul>
-
-        <% else %>
-          <p><strong><%= key.humanize %>:</strong> <%= value %></p>
+          <% else %>
+            <p><strong><%= key.humanize %>:</strong> <%= value %></p>
+          <% end %>
         <% end %>
-      <% end %>
-
+      </div>
     </div>
   <% end %>
 
-  <p>
-    <%= link_to 'Download CSV', results_domains_path(format: :csv), class: 'button' %>
-  </p>
+  <div class="mt-4">
+    <%= link_to 'Download CSV', results_domains_path(format: :csv), class: 'btn btn-primary' %>
+  </div>
 <% end %>
 
