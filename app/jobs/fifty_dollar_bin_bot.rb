@@ -9,7 +9,7 @@ class FiftyDollarBinBot < ApplicationJob
   end
 
   def check_auction(auction_details:)
-    Rails.logger.info("Auction details: #{auction_details.inspect}")
+    Rails.logger.info("Auction details: price=#{auction_details['Price']}, valid=#{auction_details['IsValid']}")
     result = { valid: true }
 
     result[:valid] = false if auction_details['IsValid'] == 'False' || auction_details['Price'].nil?
@@ -26,7 +26,8 @@ class FiftyDollarBinBot < ApplicationJob
       'ns' => 'GdAuctionsBiddingWSAPI_v2'
     }
 
-    result_node = doc.at_xpath('//ns:InstantPurchaseCloseoutDomainResponse/ns:InstantPurchaseCloseoutDomainResult', namespaces)
+    result_node = doc.at_xpath('//ns:InstantPurchaseCloseoutDomainResponse/ns:InstantPurchaseCloseoutDomainResult',
+                               namespaces)
     raise 'Missing InstantPurchaseCloseoutDomainResult node' unless result_node
 
     inner_xml = result_node.text
@@ -47,7 +48,7 @@ class FiftyDollarBinBot < ApplicationJob
       break if stop_requested?(domain_name)
 
       sleep INTERVAL
-      Rails.logger.info("[$50 BIN] Attempt ##{i + 1} for #{domain_name}")
+      Rails.logger.info("[$50 BIN] Attempt ##{i + 1} for #{domain_name}") if (i % 10).zero?
 
       auction_details = gda.get_auction_details(domain_name:)
       check = check_auction(auction_details:)
@@ -60,7 +61,8 @@ class FiftyDollarBinBot < ApplicationJob
       response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
       parsed = parse_instant_purchase_response(response)
-      Rails.logger.info("[$50 BIN] Instant purchase response: #{parsed.inspect}")
+      Rails.logger.info("Purchase response: result=#{parsed['Result']}, domain=#{parsed['DomainName']}")
+
       return true if parsed['Result'] == 'Success'
 
       Rails.logger.info("[$50 BIN] Purchase attempt failed for #{domain_name}")
@@ -72,8 +74,11 @@ class FiftyDollarBinBot < ApplicationJob
   def count_down_until(domain_name:, auction_end_time:, secs_f:)
     while Time.now.utc < auction_end_time.utc
       remaining_time = auction_end_time - Time.now.utc
-      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f', remaining_time)} seconds"
-      Rails.logger.info(text.yellow)
+      text = "Time remaining in auction for #{domain_name} until #{auction_end_time}: #{format('%.6f',
+                                                                                               remaining_time)} seconds"
+
+      Rails.logger.info(text.yellow) if rand < 0.05
+
       sleep_time = [remaining_time, secs_f].min
       sleep(sleep_time)
     end
