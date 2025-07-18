@@ -4,8 +4,8 @@
   <p>If you are the owner of BrandCrunchBot, please click the button below to sign in.</p>
 
   <p>If you are not the owner of BrandCrunchBot, you probably should not be here...</p>
-    <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
-    <%= button_to "Sign in", new_user_session_path, method: :get %>
+  <%= button_to 'Sign out', destroy_user_session_path, method: :delete %>
+  <%= button_to 'Sign in', new_user_session_path, method: :get %>
 <% end %>
 
 
@@ -13,5 +13,8 @@
 <% if current_user %>
   <p>You are logged in, <%= current_user.email %></p>
 
+  <p>
+  <%= link_to 'NameBio API Lookups', domains_path %>
+  </p>
 
 <% end %>

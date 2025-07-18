@@ -1,7 +1,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: localhost
+  host: "<%= ENV['INSIDE_DOCKER'] ? 'db' : '127.0.0.1' %>"
   username: "<%= ENV['INSIDE_DOCKER'] ? 'brandcrunchbot' : 'your_local_username' %>"
   password: "<%= ENV['INSIDE_DOCKER'] ? 'password123' : 'your_local_password' %>"
   pool: <%= ENV.fetch("RAILS_MAX_THREADS"){ 5 } %>

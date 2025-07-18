@@ -54,13 +54,10 @@ class FiftyDollarBinBot < ApplicationJob
       next unless check[:valid]
 
       cdpr = gda.estimate_closeout_domain_price(domain_name:)
-      Rails.logger.info("[$50 BIN] Estimated closeout domain price response: #{cdpr.inspect}")
       next unless cdpr.is_a?(Hash) && cdpr[:result] == 'Success'
 
-      key = cdpr[:closeout_domain_price_key]
-      Rails.logger.info("[$50 BIN] Closeout domain price key: #{key}")
-      response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key: key)
-      Rails.logger.info("[$50 BIN] Instant purchase response: #{response.inspect}")
+      closeout_domain_price_key = cdpr[:closeout_domain_price_key]
+      response = gda.instant_purchase_closeout_domain(domain_name:, closeout_domain_price_key:)
 
       parsed = parse_instant_purchase_response(response)
       Rails.logger.info("[$50 BIN] Instant purchase response: #{parsed.inspect}")

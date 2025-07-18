@@ -1,0 +1,29 @@
+[
+  {
+    "status": "success",
+    "status_message": "",
+    "credits_remaining": 49996,
+    "domain": "CrunchLeaf.com",
+    "sales": []
+  },
+  {
+    "status": "success",
+    "status_message": "",
+    "credits_remaining": 49995,
+    "domain": "HeyProgram.com",
+    "sales": [
+      [
+        "12",
+        "2022-09-01",
+        "GoDaddy"
+      ]
+    ]
+  },
+  {
+    "status": "success",
+    "status_message": "",
+    "credits_remaining": 49994,
+    "domain": "Next-Car.com",
+    "sales": []
+  }
+]
