@@ -1,8 +1,0 @@
-# .rubocop-lsp.yml
-inherit_from: .rubocop.yml
-
-Style/IfUnlessModifier:
-  Enabled: false
-
-Style/TrailingMethodEndStatement:
-  Enabled: false
