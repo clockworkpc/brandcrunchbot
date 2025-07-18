@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     collection do
       post :search, as: :search # this defines `search_domains_path`
       get :results
+      get :loading
     end
   end
 end

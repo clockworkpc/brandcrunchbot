@@ -3,6 +3,12 @@ class DomainsController < ApplicationController
 
   def index; end
 
+  def loading
+    @domains = params[:domains]
+    @comps = params[:comps]
+    @checkdomain = params[:checkdomain]
+  end
+
   def search # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     domains = params[:domains].to_s.strip.split(/[\s,]+/)
     fetch_comps = ActiveModel::Type::Boolean.new.cast(params[:comps])
@@ -13,6 +19,7 @@ class DomainsController < ApplicationController
 
     domains.each do |domain|
       result = DomainApiRequests.send_api_request(nb: @nb, domain:, fetch_comps:, fetch_checkdomain:)
+      sleep 0.5 # To avoid hitting API rate limits
       @results << result if result
     end
 

@@ -1,6 +1,6 @@
 <h1 class="text-center">Domain Lookup</h1>
 
-<%= form_with url: search_domains_path, method: :post, data: { turbo: false }, html: { class: 'form-horizontal' } do %>
+<%= form_with url: loading_domains_path, method: :get, data: { turbo: false }, html: { class: 'form-horizontal' } do %>
   <div class="form-group">
     <label class="col-form-label">Request Type:</label><br>
     <div class="form-check">
@@ -17,6 +17,8 @@
     <label for="domains" class="col-form-label">Enter domain(s):</label>
     <%= text_area_tag :domains, '', rows: 4, cols: 60, class: 'form-control', placeholder: "example.com, test.org\nor one per line" %>
   </div>
+
+    </br>
 
   <div class="form-group">
     <%= submit_tag 'Submit', class: 'btn btn-primary' %>
