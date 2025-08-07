@@ -107,4 +107,18 @@ class BuyItNowBotScheduler
       sleep 0.25
     end
   end
+
+  def log_job_in_google_sheet(auction:, run_at:)
+    datetime = DateTime.now.utc.strftime('%Y-%m-%d %H:%M:%S')
+    domain_name = auction.domain_name
+    bin_price = auction.bin_price
+
+    nested_array = [[datetime, domain_name, bin_price, run_at]]
+    spreadsheet_id = Rails.application.credentials.spreadsheet_id
+    range = 'scheduled_jobs!A1:D'
+    @gsa.append_values_from_nested_array(spreadsheet_id:, range:, nested_array:)
+    Rails.logger.info("Logged job for #{domain_name} in Google Sheets at #{auction_end_time}")
+  rescue StandardError => e
+    Rails.logger.error("Failed to log job in Google Sheets: #{e.message}")
+  end
 end
