@@ -125,6 +125,12 @@ class GoogleSheetsApi
     @service.append_spreadsheet_value(spreadsheet_id, range, values_range, value_input_option: 'USER_ENTERED')
   end
 
+  def append_values_from_nested_array(spreadsheet_id:, range:, nested_array:)
+    request_body = Google::Apis::SheetsV4::ValueRange.new
+    request_body.values = nested_array
+    @service.append_spreadsheet_value(spreadsheet_id, range, request_body, value_input_option: 'USER_ENTERED')
+  end
+
   def here_be_dragons(spreadsheet_id:, range:)
     csv_path = 'spec/fixtures/here_be_dragons.csv'
     clear_values(spreadsheet_id:, range:)
