@@ -123,14 +123,16 @@ class GodaddyApi
     doc = Nokogiri::XML(response.body)
     doc.remove_namespaces!
 
-    # find the CDATA text under GetAuctionDetailsResult
-    cdata = doc.at_xpath('//GetAuctionDetailsResult').text
-
+    # find the CDATA text - handle both API response formats
+    cdata_node = doc.at_xpath('//GetAuctionDetailsByDomainNameResult') || doc.at_xpath('//GetAuctionDetailsResult')
+    return {} unless cdata_node
+    
+    cdata = cdata_node.text
     # parse the fragment and remove namespaces again
     frag = Nokogiri::XML(cdata).remove_namespaces!
 
-    # locate the <AuctionDetails> node
-    node = frag.at_xpath('//AuctionDetails')
+    # locate the auction details node - handle both formats
+    node = frag.at_xpath('//GetAuctionDetailsByDomainName') || frag.at_xpath('//AuctionDetails')
     return {} unless node
 
     # build a hash of its attributes

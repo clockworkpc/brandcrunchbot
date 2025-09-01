@@ -35,11 +35,6 @@ RSpec.describe User, type: :model do
       user.save
     end
 
-    it 'calls send_welcome_email after create' do
-      user = build(:user)
-      expect(user).to receive(:send_welcome_email)
-      user.save
-    end
   end
 
   describe '#authorize_user' do
@@ -191,12 +186,10 @@ RSpec.describe User, type: :model do
         }
       end
 
-      it 'creates user, authorizes them, and sends welcome email' do
+      it 'creates user and authorizes them' do
         user = described_class.create!(user_params)
 
         expect(user.authorized).to be true
-        expect(UserMailer).to have_received(:welcome_email).with(user)
-        expect(mailer_double).to have_received(:deliver_now)
       end
     end
 

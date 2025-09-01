@@ -10,7 +10,9 @@ require 'database_cleaner/active_record'
 require 'faker'
 require 'factory_bot_rails'
 # require 'devise'
-# require 'webmock/rspec'
+require 'webmock/rspec'
+
+WebMock.disable_net_connect!(allow_localhost: true)
 # Add additional requires below this line. Rails is not loaded until this point!
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

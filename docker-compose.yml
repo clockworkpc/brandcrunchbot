@@ -61,6 +61,8 @@ services:
       - "4567:4567"
     environment:
       SIMULATED_AVAILABILITY_DELAY: 120  # 2 minutes
+    networks:
+      - brandcrunchbot_network
 
 networks:
   brandcrunchbot_network:

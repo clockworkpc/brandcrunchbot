@@ -190,6 +190,14 @@ RSpec.describe GodaddyController, type: :controller do
   end
 
   describe 'CSRF protection' do
+    before do
+      WebMock.allow_net_connect!
+    end
+    
+    after do
+      WebMock.disable_net_connect!(allow_localhost: true)
+    end
+    
     it 'allows POST requests without CSRF token' do
       # This test verifies that CSRF protection is skipped by making a request
       # without setting up CSRF tokens and expecting it to succeed
