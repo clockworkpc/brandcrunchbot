@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe GoogleSheetsApi do
+  before do
+    WebMock.allow_net_connect!
+  end
+  
+  after do
+    WebMock.disable_net_connect!(allow_localhost: true)
+  end
   let(:spreadsheet_id) { '1VVKoz1xM3NITzIRdRvB5l-Qp4_9updmot0Ry4yxKDC8' }
 
   describe 'Inputs' do
