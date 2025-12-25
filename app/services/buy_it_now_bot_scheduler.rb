@@ -55,7 +55,13 @@ class BuyItNowBotScheduler
       price = res['Price'].scan(/\d+/).first.to_i
       auction.update!(is_valid:, auction_end_time:, price:)
     else
-      auction.update!(is_valid:)
+      # Initialize retry tracking timestamps
+      now = Time.current
+      auction.update!(
+        is_valid: is_valid,
+        first_checked_at: auction.first_checked_at || now,  # Only set if nil
+        last_checked_at: now
+      )
     end
 
     Auction.find_by(domain_name:)
@@ -106,6 +112,19 @@ class BuyItNowBotScheduler
       schedule_job(auction:)
       sleep 0.25
     end
+
+    # Ensure retry job is running
+    schedule_retry_job_if_needed
+  end
+
+  def schedule_retry_job_if_needed
+    # Check if retry job already scheduled
+    existing_retry_job = Delayed::Job.where('handler LIKE ?', '%AuctionRetryJob%').first
+    return if existing_retry_job
+
+    # Schedule first run in 1 hour
+    AuctionRetryJob.set(wait: 1.hour).perform_later
+    Rails.logger.info("AuctionRetryJob scheduled for #{1.hour.from_now}")
   end
 
   def log_job_in_google_sheet(auction:, run_at:)

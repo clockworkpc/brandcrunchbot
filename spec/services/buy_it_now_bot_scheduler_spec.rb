@@ -162,6 +162,26 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
         expect(updated.auction_end_time).to be_nil
         expect(updated.price).to be_nil
       end
+
+      it 'initializes retry tracking timestamps' do
+        Timecop.freeze do
+          updated = scheduler.fetch_auction_details(auction:)
+
+          expect(updated.is_valid).to be false
+          expect(updated.first_checked_at).to be_within(1.second).of(Time.current)
+          expect(updated.last_checked_at).to be_within(1.second).of(Time.current)
+        end
+      end
+
+      it 'does not overwrite first_checked_at on subsequent checks' do
+        auction.update!(first_checked_at: 5.hours.ago, last_checked_at: 5.hours.ago)
+        original_first_checked = auction.first_checked_at
+
+        updated = scheduler.fetch_auction_details(auction:)
+
+        expect(updated.first_checked_at).to eq(original_first_checked)
+        expect(updated.last_checked_at).to be > original_first_checked
+      end
     end
   end
 
@@ -271,7 +291,7 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     before do
       # stub out sleep to speed tests
       allow(Kernel).to receive(:sleep)
-      # seed a stray job so we can verify it’s cleared
+      # seed a stray job so we can verify it's cleared
       Delayed::Job.create!(handler: 'garbage', run_at: 1.day.ago)
     end
 
@@ -285,6 +305,24 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
 
       names = Auction.where(active: true).pluck(:domain_name)
       expect(names).to match_array(%w[new1.com new2.com])
+    end
+
+    it 'schedules AuctionRetryJob if not already scheduled' do
+      job_proxy_double = double('JobProxy', perform_later: true)
+      expect(AuctionRetryJob).to receive(:set).with(wait: 1.hour).and_return(job_proxy_double)
+
+      scheduler.call(changes: changes)
+    end
+
+    it 'does not schedule duplicate AuctionRetryJob if one exists' do
+      # Stub the where query to return a job (simulating existing retry job)
+      existing_job_double = double('DelayedJob')
+      allow(Delayed::Job).to receive(:where).with('handler LIKE ?', '%AuctionRetryJob%').and_return([existing_job_double])
+      allow([existing_job_double]).to receive(:first).and_return(existing_job_double)
+
+      expect(AuctionRetryJob).not_to receive(:set)
+
+      scheduler.call(changes: changes)
     end
   end
 end
