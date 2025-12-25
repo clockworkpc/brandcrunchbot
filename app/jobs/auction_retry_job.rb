@@ -11,8 +11,12 @@ class AuctionRetryJob < ApplicationJob
       sleep 0.25 # Rate limiting (pattern from BuyItNowBotScheduler)
     end
 
-    # Always reschedule (infinite loop until manually stopped)
-    reschedule_next_check
+    # Only reschedule if there are still invalid auctions to check
+    if auctions_to_check.exists?
+      reschedule_next_check
+    else
+      Rails.logger.info("AuctionRetryJob will not be rescheduled: no invalid auctions remaining to check")
+    end
   end
 
   private
@@ -25,7 +29,7 @@ class AuctionRetryJob < ApplicationJob
   def should_check_auction?(auction)
     return true if auction.last_checked_at.nil?
 
-    age_hours = (Time.current - auction.created_at) / 1.hour
+    age_hours = (Time.current - auction.first_checked_at) / 1.hour
 
     if age_hours < 24
       # Check every hour for first 24 hours

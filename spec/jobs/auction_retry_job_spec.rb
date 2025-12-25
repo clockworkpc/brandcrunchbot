@@ -12,8 +12,8 @@ RSpec.describe AuctionRetryJob, type: :job do
 
   describe '#perform' do
     context 'when no invalid auctions exist' do
-      it 'reschedules itself without processing' do
-        expect(AuctionRetryJob).to receive(:set).with(wait: 1.hour).and_return(double(perform_later: true))
+      it 'does not reschedule itself' do
+        expect(AuctionRetryJob).not_to receive(:set)
 
         AuctionRetryJob.new.perform
       end
@@ -39,6 +39,12 @@ RSpec.describe AuctionRetryJob, type: :job do
         expect {
           AuctionRetryJob.new.perform
         }.to change { auction.reload.last_checked_at }
+      end
+
+      it 'reschedules itself when invalid auctions still exist' do
+        expect(AuctionRetryJob).to receive(:set).with(wait: 1.hour).and_return(double(perform_later: true))
+
+        AuctionRetryJob.new.perform
       end
     end
 
@@ -109,7 +115,7 @@ RSpec.describe AuctionRetryJob, type: :job do
         allow(scheduler_double).to receive(:schedule_job)
       end
 
-      it 'schedules FiftyDollarBinBot for high price auctions' do
+      it 'schedules a buy-it-now job for high price auctions' do
         expect(scheduler_double).to receive(:schedule_job).with(auction: auction)
 
         AuctionRetryJob.new.perform
@@ -158,6 +164,26 @@ RSpec.describe AuctionRetryJob, type: :job do
 
       it 'checks if last checked more than 24 hours ago' do
         auction.update!(last_checked_at: 25.hours.ago)
+        expect(subject.send(:should_check_auction?, auction)).to be true
+      end
+    end
+
+    context 'auction created long ago but recently marked invalid' do
+      let(:auction) do
+        create(:auction,
+          created_at: 3.days.ago,
+          first_checked_at: 1.hour.ago,
+          last_checked_at: 30.minutes.ago
+        )
+      end
+
+      it 'uses hourly interval based on first_checked_at, not created_at' do
+        # Should not check yet (only 30 minutes since last check, needs 1 hour)
+        expect(subject.send(:should_check_auction?, auction)).to be false
+      end
+
+      it 'checks when more than 1 hour has passed since last check' do
+        auction.update!(last_checked_at: 61.minutes.ago)
         expect(subject.send(:should_check_auction?, auction)).to be true
       end
     end

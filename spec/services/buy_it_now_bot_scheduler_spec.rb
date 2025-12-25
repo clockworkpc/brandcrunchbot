@@ -308,6 +308,7 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     end
 
     it 'schedules AuctionRetryJob if not already scheduled' do
+      allow(scheduler).to receive(:schedule_job)
       job_proxy_double = double('JobProxy', perform_later: true)
       expect(AuctionRetryJob).to receive(:set).with(wait: 1.hour).and_return(job_proxy_double)
 
@@ -315,10 +316,12 @@ RSpec.describe BuyItNowBotScheduler, type: :service do
     end
 
     it 'does not schedule duplicate AuctionRetryJob if one exists' do
+      allow(scheduler).to receive(:schedule_job)
       # Stub the where query to return a job (simulating existing retry job)
       existing_job_double = double('DelayedJob')
-      allow(Delayed::Job).to receive(:where).with('handler LIKE ?', '%AuctionRetryJob%').and_return([existing_job_double])
-      allow([existing_job_double]).to receive(:first).and_return(existing_job_double)
+      allow(Delayed::Job).to receive(:where)
+        .with('handler LIKE ?', '%AuctionRetryJob%')
+        .and_return(double(first: existing_job_double))
 
       expect(AuctionRetryJob).not_to receive(:set)
 
