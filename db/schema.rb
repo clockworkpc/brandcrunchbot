@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_24_115307) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_25_075831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_24_115307) do
     t.datetime "auction_end_time"
     t.integer "price"
     t.string "purchase_status", default: "pending"
+    t.datetime "first_checked_at"
+    t.datetime "last_checked_at"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

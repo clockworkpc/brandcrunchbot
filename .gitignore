@@ -50,3 +50,5 @@ yarn-debug.log*
 # server*
 
 domains.csv
+CLAUDE.md
+UPDATE.md
